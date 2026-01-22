@@ -155,28 +155,66 @@ h3 {
 .deck-preview {
     display: flex;
     justify-content: center;
-    align-items: center;
-    gap: 2rem;
+    align-items: stretch;
+    gap: 1.5rem;
     margin-bottom: 3rem;
+    flex-wrap: wrap;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .deck-choice {
     background: var(--bg-tertiary);
     border-radius: 16px;
-    padding: 1.5rem 2rem;
+    padding: 1.25rem 1.5rem;
     text-align: center;
     border: 2px solid transparent;
     transition: var(--transition-normal);
+    flex: 1;
+    min-width: 180px;
+    max-width: 220px;
 }
 
-.deck-choice.player-deck {
-    border-color: var(--type-fire-dark);
+.deck-choice.selectable {
+    cursor: pointer;
+    border: 2px solid transparent;
+    opacity: 0.7;
+    filter: grayscale(0.5);
+    background: var(--bg-card);
+}
+
+.deck-choice.selectable:hover {
+    opacity: 0.9;
+    filter: grayscale(0.2);
+    transform: translateY(-5px);
+    border-color: var(--accent-primary);
+}
+
+.deck-choice.selectable.selected {
+    opacity: 1;
+    filter: grayscale(0);
+    transform: scale(1.05) translateY(-5px);
+}
+
+.deck-choice.selectable.selected[data-deck="fire"] {
+    border-color: var(--type-fire);
     box-shadow: 0 0 30px var(--type-fire-glow);
 }
 
-.deck-choice.cpu-deck {
-    border-color: var(--type-water-dark);
+.deck-choice.selectable.selected[data-deck="water"] {
+    border-color: var(--type-water);
     box-shadow: 0 0 30px var(--type-water-glow);
+}
+
+.deck-choice.selectable.selected[data-deck="grass"] {
+    border-color: var(--type-grass);
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
+}
+
+.deck-choice.selectable.selected[data-deck="electric"] {
+    border-color: var(--type-electric);
+    box-shadow: 0 0 30px rgba(250, 204, 21, 0.4);
 }
 
 .deck-icon {
@@ -192,6 +230,14 @@ h3 {
 
 .deck-icon.water {
     background: linear-gradient(135deg, var(--type-water) 0%, var(--type-water-dark) 100%);
+}
+
+.deck-icon.grass {
+    background: linear-gradient(135deg, var(--type-grass) 0%, #166534 100%);
+}
+
+.deck-icon.electric {
+    background: linear-gradient(135deg, var(--type-electric) 0%, #a16207 100%);
 }
 
 .deck-choice h3 {
@@ -675,6 +721,14 @@ h3 {
     background: var(--type-water);
 }
 
+.energy-mini.grass {
+    background: var(--type-grass);
+}
+
+.energy-mini.electric {
+    background: var(--type-electric);
+}
+
 .energy-mini.colorless {
     background: var(--type-colorless);
 }
@@ -819,6 +873,14 @@ h3 {
     background: var(--type-water);
 }
 
+.energy-icon.grass {
+    background: var(--type-grass);
+}
+
+.energy-icon.electric {
+    background: var(--type-electric);
+}
+
 .status-badge {
     position: absolute;
     top: 4px;
@@ -891,6 +953,14 @@ h3 {
 
 .energy-symbol.water {
     background: radial-gradient(circle, var(--type-water), var(--type-water-dark));
+}
+
+.energy-symbol.grass {
+    background: radial-gradient(circle, var(--type-grass), #166534);
+}
+
+.energy-symbol.electric {
+    background: radial-gradient(circle, var(--type-electric), #a16207);
 }
 
 .energy-name {
@@ -1122,6 +1192,14 @@ h3 {
 
 .detail-header.water {
     background: linear-gradient(135deg, var(--type-water-dark), var(--bg-tertiary));
+}
+
+.detail-header.grass {
+    background: linear-gradient(135deg, #166534, var(--bg-tertiary));
+}
+
+.detail-header.electric {
+    background: linear-gradient(135deg, #a16207, var(--bg-tertiary));
 }
 
 .detail-header.trainer {

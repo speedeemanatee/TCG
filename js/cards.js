@@ -742,6 +742,371 @@ const Cloyster = {
 };
 
 // ============================================
+// GRASS TYPE POKEMON
+// ============================================
+
+const Bulbasaur = {
+    id: 'bulbasaur',
+    name: 'Bulbasaur',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.GRASS,
+    stage: Stage.BASIC,
+    hp: 70,
+    evolvesFrom: null,
+    image: null,
+    placeholderIcon: '🌱',
+    weakness: PokemonType.FIRE,
+    resistance: null,
+    retreatCost: 1,
+    attacks: [
+        {
+            name: 'Tackle',
+            cost: [PokemonType.COLORLESS],
+            damage: 10,
+            effect: null,
+            description: 'A basic tackle.'
+        },
+        {
+            name: 'Vine Whip',
+            cost: [PokemonType.GRASS, PokemonType.COLORLESS],
+            damage: 30,
+            effect: null,
+            description: 'A whipping vine attack.'
+        }
+    ]
+};
+
+const Ivysaur = {
+    id: 'ivysaur',
+    name: 'Ivysaur',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.GRASS,
+    stage: Stage.STAGE1,
+    hp: 90,
+    evolvesFrom: 'bulbasaur',
+    image: null,
+    placeholderIcon: '🌿',
+    weakness: PokemonType.FIRE,
+    resistance: null,
+    retreatCost: 2,
+    attacks: [
+        {
+            name: 'Razor Leaf',
+            cost: [PokemonType.GRASS, PokemonType.COLORLESS],
+            damage: 40,
+            effect: null,
+            description: 'Sharp leaves slice the opponent.'
+        },
+        {
+            name: 'Solar Beam',
+            cost: [PokemonType.GRASS, PokemonType.GRASS, PokemonType.COLORLESS],
+            damage: 80,
+            effect: null,
+            description: 'A powerful beam of light.'
+        }
+    ]
+};
+
+const Venusaur = {
+    id: 'venusaur',
+    name: 'Venusaur',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.GRASS,
+    stage: Stage.STAGE2,
+    hp: 160,
+    evolvesFrom: 'ivysaur',
+    image: null,
+    placeholderIcon: '🌺',
+    weakness: PokemonType.FIRE,
+    resistance: null,
+    retreatCost: 4,
+    attacks: [
+        {
+            name: 'Petal Dance',
+            cost: [PokemonType.GRASS, PokemonType.GRASS, PokemonType.GRASS],
+            damage: 60,
+            effect: 'multiCoinFlip',
+            flipCount: 3,
+            description: 'Flip 3 coins. This attack does 60 damage times the number of heads.'
+        },
+        {
+            name: 'Solar Beam',
+            cost: [PokemonType.GRASS, PokemonType.GRASS, PokemonType.GRASS, PokemonType.GRASS],
+            damage: 130,
+            effect: null,
+            description: 'A devastating beam of light.'
+        }
+    ]
+};
+
+const Oddish = {
+    id: 'oddish',
+    name: 'Oddish',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.GRASS,
+    stage: Stage.BASIC,
+    hp: 50,
+    evolvesFrom: null,
+    image: null,
+    placeholderIcon: '🌱',
+    weakness: PokemonType.FIRE,
+    resistance: null,
+    retreatCost: 1,
+    attacks: [
+        {
+            name: 'Absorb',
+            cost: [PokemonType.GRASS],
+            damage: 10,
+            effect: 'healSelf',
+            healAmount: 10,
+            description: 'Heal 10 damage from this Pokemon.'
+        }
+    ]
+};
+
+const Gloom = {
+    id: 'gloom',
+    name: 'Gloom',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.GRASS,
+    stage: Stage.STAGE1,
+    hp: 80,
+    evolvesFrom: 'oddish',
+    image: null,
+    placeholderIcon: '🥀',
+    weakness: PokemonType.FIRE,
+    resistance: null,
+    retreatCost: 2,
+    attacks: [
+        {
+            name: 'Poison Powder',
+            cost: [PokemonType.GRASS],
+            damage: 20,
+            effect: 'poison',
+            description: 'The Defending Pokemon is now Poisoned.'
+        }
+    ]
+};
+
+const Vileplume = {
+    id: 'vileplume',
+    name: 'Vileplume',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.GRASS,
+    stage: Stage.STAGE2,
+    hp: 140,
+    evolvesFrom: 'gloom',
+    image: null,
+    placeholderIcon: '🌻',
+    weakness: PokemonType.FIRE,
+    resistance: null,
+    retreatCost: 3,
+    attacks: [
+        {
+            name: 'Stun Spore',
+            cost: [PokemonType.GRASS, PokemonType.COLORLESS],
+            damage: 40,
+            effect: 'coinFlipParalyze',
+            description: 'Flip a coin. If heads, the Defending Pokemon is now Paralyzed.'
+        },
+        {
+            name: 'Solar Beam',
+            cost: [PokemonType.GRASS, PokemonType.GRASS, PokemonType.COLORLESS],
+            damage: 90,
+            effect: null,
+            description: 'A powerful beam of light.'
+        }
+    ]
+};
+
+const Tangela = {
+    id: 'tangela',
+    name: 'Tangela',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.GRASS,
+    stage: Stage.BASIC,
+    hp: 80,
+    evolvesFrom: null,
+    image: null,
+    placeholderIcon: '🌀',
+    weakness: PokemonType.FIRE,
+    resistance: null,
+    retreatCost: 2,
+    attacks: [
+        {
+            name: 'Bind',
+            cost: [PokemonType.GRASS, PokemonType.COLORLESS],
+            damage: 30,
+            effect: 'coinFlipParalyze',
+            description: 'Flip a coin. If heads, the Defending Pokemon is now Paralyzed.'
+        }
+    ]
+};
+
+// ============================================
+// ELECTRIC TYPE POKEMON
+// ============================================
+
+const Pikachu = {
+    id: 'pikachu',
+    name: 'Pikachu',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.ELECTRIC,
+    stage: Stage.BASIC,
+    hp: 60,
+    evolvesFrom: null,
+    image: null,
+    placeholderIcon: '⚡',
+    weakness: PokemonType.FIGHTING,
+    resistance: null,
+    retreatCost: 1,
+    attacks: [
+        {
+            name: 'Quick Attack',
+            cost: [PokemonType.COLORLESS],
+            damage: 10,
+            effect: 'coinFlipBonus',
+            bonusDamage: 20,
+            description: 'Flip a coin. If heads, this attack does 20 more damage.'
+        },
+        {
+            name: 'Electro Ball',
+            cost: [PokemonType.ELECTRIC, PokemonType.COLORLESS],
+            damage: 40,
+            effect: null,
+            description: 'A ball of electricity.'
+        }
+    ]
+};
+
+const Raichu = {
+    id: 'raichu',
+    name: 'Raichu',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.ELECTRIC,
+    stage: Stage.STAGE1,
+    hp: 110,
+    evolvesFrom: 'pikachu',
+    image: null,
+    placeholderIcon: '⚡',
+    weakness: PokemonType.FIGHTING,
+    resistance: null,
+    retreatCost: 1,
+    attacks: [
+        {
+            name: 'Thunderbolt',
+            cost: [PokemonType.ELECTRIC, PokemonType.ELECTRIC, PokemonType.COLORLESS],
+            damage: 120,
+            effect: 'discardEnergy',
+            effectAmount: 1,
+            effectType: PokemonType.ELECTRIC,
+            description: 'Discard 1 Electric Energy from this Pokemon.'
+        }
+    ]
+};
+
+const Magnemite = {
+    id: 'magnemite',
+    name: 'Magnemite',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.ELECTRIC,
+    stage: Stage.BASIC,
+    hp: 60,
+    evolvesFrom: null,
+    image: null,
+    placeholderIcon: '🧲',
+    weakness: PokemonType.FIGHTING,
+    resistance: PokemonType.COLORLESS,
+    retreatCost: 1,
+    attacks: [
+        {
+            name: 'Thunder Wave',
+            cost: [PokemonType.ELECTRIC],
+            damage: 10,
+            effect: 'coinFlipParalyze',
+            description: 'Flip a coin. If heads, the Defending Pokemon is now Paralyzed.'
+        }
+    ]
+};
+
+const Magneton = {
+    id: 'magneton',
+    name: 'Magneton',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.ELECTRIC,
+    stage: Stage.STAGE1,
+    hp: 90,
+    evolvesFrom: 'magnemite',
+    image: null,
+    placeholderIcon: '🧲',
+    weakness: PokemonType.FIGHTING,
+    resistance: PokemonType.COLORLESS,
+    retreatCost: 2,
+    attacks: [
+        {
+            name: 'Self-Destruct',
+            cost: [PokemonType.ELECTRIC, PokemonType.ELECTRIC, PokemonType.COLORLESS],
+            damage: 100,
+            effect: 'selfDestruct',
+            selfDamage: 100,
+            benchDamage: 20,
+            description: 'This Pokemon does 100 damage to itself. Also does 20 damage to each Benched Pokemon (both your and your opponent\'s).'
+        }
+    ]
+};
+
+const Electabuzz = {
+    id: 'electabuzz',
+    name: 'Electabuzz',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.ELECTRIC,
+    stage: Stage.BASIC,
+    hp: 90,
+    evolvesFrom: null,
+    image: null,
+    placeholderIcon: '🔌',
+    weakness: PokemonType.FIGHTING,
+    resistance: null,
+    retreatCost: 2,
+    attacks: [
+        {
+            name: 'Thunderpunch',
+            cost: [PokemonType.ELECTRIC, PokemonType.COLORLESS],
+            damage: 30,
+            effect: 'coinFlipBonus',
+            bonusDamage: 10,
+            selfDamageOnTails: 10,
+            description: 'Flip a coin. If heads, this attack does 30 damage plus 10 more damage. If tails, this attack does 30 damage and Electabuzz does 10 damage to itself.'
+        }
+    ]
+};
+
+const Zapdos = {
+    id: 'zapdos',
+    name: 'Zapdos',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.ELECTRIC,
+    stage: Stage.BASIC,
+    hp: 120,
+    evolvesFrom: null,
+    image: null,
+    placeholderIcon: '🦅',
+    weakness: null,
+    resistance: PokemonType.FIGHTING,
+    retreatCost: 2,
+    attacks: [
+        {
+            name: 'Thunder',
+            cost: [PokemonType.ELECTRIC, PokemonType.ELECTRIC, PokemonType.ELECTRIC, PokemonType.COLORLESS],
+            damage: 120,
+            effect: 'coinFlipSelfDamage',
+            selfDamage: 30,
+            description: 'Flip a coin. If tails, Zapdos does 30 damage to itself.'
+        }
+    ]
+};
+
+// ============================================
 // ENERGY CARDS
 // ============================================
 
@@ -757,6 +1122,20 @@ const WaterEnergy = {
     name: 'Water Energy',
     cardType: CardType.ENERGY,
     energyType: PokemonType.WATER
+};
+
+const GrassEnergy = {
+    id: 'grass-energy',
+    name: 'Grass Energy',
+    cardType: CardType.ENERGY,
+    energyType: PokemonType.GRASS
+};
+
+const ElectricEnergy = {
+    id: 'electric-energy',
+    name: 'Electric Energy',
+    cardType: CardType.ENERGY,
+    energyType: PokemonType.ELECTRIC
 };
 
 // ============================================
@@ -916,6 +1295,65 @@ function createWaterDeck() {
     return deck;
 }
 
+function createGrassDeck() {
+    const deck = [];
+
+    // Basic Pokemon (12)
+    for (let i = 0; i < 4; i++) deck.push({ ...Bulbasaur, uid: `bulbasaur-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...Oddish, uid: `oddish-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...Tangela, uid: `tangela-${i}` });
+
+    // Stage 1 Pokemon (8)
+    for (let i = 0; i < 4; i++) deck.push({ ...Ivysaur, uid: `ivysaur-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...Gloom, uid: `gloom-${i}` });
+
+    // Stage 2 Pokemon (4)
+    for (let i = 0; i < 2; i++) deck.push({ ...Venusaur, uid: `venusaur-${i}` });
+    for (let i = 0; i < 2; i++) deck.push({ ...Vileplume, uid: `vileplume-${i}` });
+
+    // Energy (20)
+    for (let i = 0; i < 20; i++) deck.push({ ...GrassEnergy, uid: `grass-energy-${i}` });
+
+    // Trainers (16)
+    for (let i = 0; i < 4; i++) deck.push({ ...Potion, uid: `potion-${i}` });
+    for (let i = 0; i < 2; i++) deck.push({ ...Switch, uid: `switch-${i}` });
+    for (let i = 0; i < 3; i++) deck.push({ ...ProfessorsResearch, uid: `professors-research-${i}` });
+    for (let i = 0; i < 2; i++) deck.push({ ...PokeBall, uid: `poke-ball-${i}` });
+    for (let i = 0; i < 2; i++) deck.push({ ...EnergyRetrieval, uid: `energy-retrieval-${i}` });
+    for (let i = 0; i < 2; i++) deck.push({ ...Marnie, uid: `marnie-${i}` });
+    for (let i = 0; i < 1; i++) deck.push({ ...BossOrders, uid: `boss-orders-${i}` });
+
+    return deck;
+}
+
+function createElectricDeck() {
+    const deck = [];
+
+    // Basic Pokemon (12)
+    for (let i = 0; i < 4; i++) deck.push({ ...Pikachu, uid: `pikachu-${i}` });
+    for (let i = 0; i < 3; i++) deck.push({ ...Magnemite, uid: `magnemite-${i}` });
+    for (let i = 0; i < 3; i++) deck.push({ ...Electabuzz, uid: `electabuzz-${i}` });
+    for (let i = 0; i < 2; i++) deck.push({ ...Zapdos, uid: `zapdos-${i}` });
+
+    // Stage 1 Pokemon (8)
+    for (let i = 0; i < 4; i++) deck.push({ ...Raichu, uid: `raichu-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...Magneton, uid: `magneton-${i}` });
+
+    // Energy (20)
+    for (let i = 0; i < 20; i++) deck.push({ ...ElectricEnergy, uid: `electric-energy-${i}` });
+
+    // Trainers (16)
+    for (let i = 0; i < 4; i++) deck.push({ ...Potion, uid: `potion-${i}` });
+    for (let i = 0; i < 2; i++) deck.push({ ...Switch, uid: `switch-${i}` });
+    for (let i = 0; i < 3; i++) deck.push({ ...ProfessorsResearch, uid: `professors-research-${i}` });
+    for (let i = 0; i < 2; i++) deck.push({ ...PokeBall, uid: `poke-ball-${i}` });
+    for (let i = 0; i < 2; i++) deck.push({ ...EnergyRetrieval, uid: `energy-retrieval-${i}` });
+    for (let i = 0; i < 2; i++) deck.push({ ...Marnie, uid: `marnie-${i}` });
+    for (let i = 0; i < 1; i++) deck.push({ ...BossOrders, uid: `boss-orders-${i}` });
+
+    return deck;
+}
+
 // Export for use in other modules
 window.CardType = CardType;
 window.PokemonType = PokemonType;
@@ -924,3 +1362,5 @@ window.Stage = Stage;
 window.StatusCondition = StatusCondition;
 window.createFireDeck = createFireDeck;
 window.createWaterDeck = createWaterDeck;
+window.createGrassDeck = createGrassDeck;
+window.createElectricDeck = createElectricDeck;

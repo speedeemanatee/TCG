@@ -27,14 +27,24 @@ class GameEngine {
     // SETUP PHASE
     // ============================================
 
-    setupGame() {
+    setupGame(playerDeckType = 'fire', cpuDeckType = 'water') {
         this.state.reset();
 
-        // Create decks
-        this.state.player.deck = this.shuffleDeck(createFireDeck());
-        this.state.cpu.deck = this.shuffleDeck(createWaterDeck());
+        // Create decks based on selection
+        const deckCreators = {
+            'fire': createFireDeck,
+            'water': createWaterDeck,
+            'grass': createGrassDeck,
+            'electric': createElectricDeck
+        };
 
-        this.state.log('Decks shuffled and ready!');
+        const playerDeckCreator = deckCreators[playerDeckType] || createFireDeck;
+        const cpuDeckCreator = deckCreators[cpuDeckType] || createWaterDeck;
+
+        this.state.player.deck = this.shuffleDeck(playerDeckCreator());
+        this.state.cpu.deck = this.shuffleDeck(cpuDeckCreator());
+
+        this.state.log(`Decks initialized: Player (${playerDeckType}), CPU (${cpuDeckType})`);
 
         // Draw initial hands
         this.drawInitialHands();

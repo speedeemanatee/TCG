@@ -5,6 +5,7 @@ let gameState = null;
 let gameEngine = null;
 let cpuAI = null;
 let gameUI = null;
+let selectedDeck = 'fire'; // Default selection
 
 // Initialize the game
 function initGame() {
@@ -39,7 +40,11 @@ async function startNewGame() {
     }
 
     // Setup the game
-    gameEngine.setupGame();
+    const allDeckTypes = ['fire', 'water', 'grass', 'electric'];
+    const otherDeckTypes = allDeckTypes.filter(d => d !== selectedDeck);
+    const cpuDeck = otherDeckTypes[Math.floor(Math.random() * otherDeckTypes.length)];
+
+    gameEngine.setupGame(selectedDeck, cpuDeck);
 
     // Initialize UI
     gameUI.init();
@@ -126,6 +131,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (startBtn) {
         startBtn.addEventListener('click', startNewGame);
     }
+
+    // Add deck selection listeners
+    const deckChoices = document.querySelectorAll('.deck-choice.selectable');
+    deckChoices.forEach(choice => {
+        choice.addEventListener('click', () => {
+            // Update state
+            selectedDeck = choice.dataset.deck;
+
+            // Update UI
+            deckChoices.forEach(c => c.classList.remove('selected'));
+            choice.classList.add('selected');
+
+            console.log(`🎴 Selected deck: ${selectedDeck}`);
+        });
+    });
 
     // Auto-start if no start button
     if (!startBtn) {
