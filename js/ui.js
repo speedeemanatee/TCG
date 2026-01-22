@@ -1,0 +1,1068 @@
+// Pokemon TCG - UI Rendering and Interaction
+
+class GameUI {
+    constructor(gameState, gameEngine, cpuAI) {
+        this.state = gameState;
+        this.engine = gameEngine;
+        this.cpu = cpuAI;
+
+        // Current selection state
+        this.selectedCard = null;
+        this.selectedAction = null;
+        this.awaitingTarget = false;
+        this.pendingAction = null;
+
+        // DOM element cache
+        this.elements = {};
+
+        // Bind methods
+        this.handleCardClick = this.handleCardClick.bind(this);
+        this.handleActionButton = this.handleActionButton.bind(this);
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+
+    init() {
+        this.cacheElements();
+        this.bindEvents();
+        this.render();
+    }
+
+    cacheElements() {
+        this.elements = {
+            // Player zones
+            playerHand: document.getElementById('player-hand'),
+            playerActive: document.getElementById('player-active'),
+            playerBench: document.getElementById('player-bench'),
+            playerDeck: document.getElementById('player-deck'),
+            playerDiscard: document.getElementById('player-discard'),
+            playerPrizes: document.getElementById('player-prizes'),
+
+            // CPU zones
+            cpuActive: document.getElementById('cpu-active'),
+            cpuBench: document.getElementById('cpu-bench'),
+            cpuDeck: document.getElementById('cpu-deck'),
+            cpuDiscard: document.getElementById('cpu-discard'),
+            cpuPrizes: document.getElementById('cpu-prizes'),
+            cpuHand: document.getElementById('cpu-hand'),
+
+            // UI controls
+            actionPanel: document.getElementById('action-panel'),
+            attackBtn: document.getElementById('attack-btn'),
+            retreatBtn: document.getElementById('retreat-btn'),
+            endTurnBtn: document.getElementById('end-turn-btn'),
+
+            // Info displays
+            gameLog: document.getElementById('game-log'),
+            turnInfo: document.getElementById('turn-info'),
+            phaseInfo: document.getElementById('phase-info'),
+
+            // Modals
+            modal: document.getElementById('modal'),
+            modalTitle: document.getElementById('modal-title'),
+            modalContent: document.getElementById('modal-content'),
+            modalClose: document.getElementById('modal-close'),
+
+            // Card detail
+            cardDetail: document.getElementById('card-detail'),
+
+            // Game over
+            gameOverScreen: document.getElementById('game-over-screen'),
+            gameOverMessage: document.getElementById('game-over-message'),
+            newGameBtn: document.getElementById('new-game-btn')
+        };
+    }
+
+    bindEvents() {
+        // Action buttons
+        this.elements.attackBtn?.addEventListener('click', () => this.handleActionButton('attack'));
+        this.elements.retreatBtn?.addEventListener('click', () => this.handleActionButton('retreat'));
+        this.elements.endTurnBtn?.addEventListener('click', () => this.handleActionButton('endTurn'));
+
+        // Modal close
+        this.elements.modalClose?.addEventListener('click', () => this.hideModal());
+
+        // New game
+        this.elements.newGameBtn?.addEventListener('click', () => this.startNewGame());
+
+        // Close modal on outside click
+        this.elements.modal?.addEventListener('click', (e) => {
+            if (e.target === this.elements.modal) {
+                this.hideModal();
+            }
+        });
+    }
+
+    // ============================================
+    // RENDERING
+    // ============================================
+
+    render() {
+        this.renderPlayerHand();
+        this.renderPlayerActive();
+        this.renderPlayerBench();
+        this.renderPlayerDeck();
+        this.renderPlayerDiscard();
+        this.renderPlayerPrizes();
+
+        this.renderCPUActive();
+        this.renderCPUBench();
+        this.renderCPUDeck();
+        this.renderCPUDiscard();
+        this.renderCPUPrizes();
+        this.renderCPUHand();
+
+        this.renderTurnInfo();
+        this.updateActionButtons();
+
+        if (this.state.gameOver) {
+            this.showGameOver();
+        }
+    }
+
+    // Player Hand
+    renderPlayerHand() {
+        if (!this.elements.playerHand) return;
+
+        this.elements.playerHand.innerHTML = '';
+
+        for (const card of this.state.player.hand) {
+            const cardEl = this.createCardElement(card, 'player', 'hand');
+            this.elements.playerHand.appendChild(cardEl);
+        }
+    }
+
+    // Player Active
+    renderPlayerActive() {
+        if (!this.elements.playerActive) return;
+
+        this.elements.playerActive.innerHTML = '';
+
+        if (this.state.player.active) {
+            const cardEl = this.createActivePokemonElement(this.state.player.active, 'player');
+            this.elements.playerActive.appendChild(cardEl);
+        } else {
+            this.elements.playerActive.innerHTML = '<div class="empty-slot">No Active Pokémon</div>';
+        }
+    }
+
+    // Player Bench
+    renderPlayerBench() {
+        if (!this.elements.playerBench) return;
+
+        this.elements.playerBench.innerHTML = '';
+
+        for (let i = 0; i < 5; i++) {
+            if (i < this.state.player.bench.length) {
+                const cardEl = this.createActivePokemonElement(this.state.player.bench[i], 'player', i);
+                this.elements.playerBench.appendChild(cardEl);
+            } else {
+                const emptySlot = document.createElement('div');
+                emptySlot.className = 'bench-slot empty';
+                emptySlot.textContent = '';
+                this.elements.playerBench.appendChild(emptySlot);
+            }
+        }
+    }
+
+    // Player Deck
+    renderPlayerDeck() {
+        if (!this.elements.playerDeck) return;
+
+        this.elements.playerDeck.innerHTML = `
+            <div class="deck-stack">
+                <div class="card-back"></div>
+                <div class="deck-count">${this.state.player.deck.length}</div>
+            </div>
+        `;
+    }
+
+    // Player Discard
+    renderPlayerDiscard() {
+        if (!this.elements.playerDiscard) return;
+
+        const topCard = this.state.player.discardPile[this.state.player.discardPile.length - 1];
+
+        if (topCard) {
+            this.elements.playerDiscard.innerHTML = `
+                <div class="discard-pile" title="Discard Pile (${this.state.player.discardPile.length} cards)">
+                    ${this.getCardMiniDisplay(topCard)}
+                    <div class="discard-count">${this.state.player.discardPile.length}</div>
+                </div>
+            `;
+        } else {
+            this.elements.playerDiscard.innerHTML = '<div class="empty-discard">Discard</div>';
+        }
+    }
+
+    // Player Prizes
+    renderPlayerPrizes() {
+        if (!this.elements.playerPrizes) return;
+
+        this.elements.playerPrizes.innerHTML = '';
+
+        for (let i = 0; i < 6; i++) {
+            const prizeEl = document.createElement('div');
+            prizeEl.className = `prize-card ${i < this.state.player.prizeCards.length ? 'active' : 'taken'}`;
+            this.elements.playerPrizes.appendChild(prizeEl);
+        }
+    }
+
+    // CPU zones
+    renderCPUActive() {
+        if (!this.elements.cpuActive) return;
+
+        this.elements.cpuActive.innerHTML = '';
+
+        if (this.state.cpu.active) {
+            const cardEl = this.createActivePokemonElement(this.state.cpu.active, 'cpu');
+            this.elements.cpuActive.appendChild(cardEl);
+        } else {
+            this.elements.cpuActive.innerHTML = '<div class="empty-slot">No Active Pokémon</div>';
+        }
+    }
+
+    renderCPUBench() {
+        if (!this.elements.cpuBench) return;
+
+        this.elements.cpuBench.innerHTML = '';
+
+        for (let i = 0; i < 5; i++) {
+            if (i < this.state.cpu.bench.length) {
+                const cardEl = this.createActivePokemonElement(this.state.cpu.bench[i], 'cpu', i);
+                this.elements.cpuBench.appendChild(cardEl);
+            } else {
+                const emptySlot = document.createElement('div');
+                emptySlot.className = 'bench-slot empty';
+                this.elements.cpuBench.appendChild(emptySlot);
+            }
+        }
+    }
+
+    renderCPUDeck() {
+        if (!this.elements.cpuDeck) return;
+
+        this.elements.cpuDeck.innerHTML = `
+            <div class="deck-stack cpu">
+                <div class="card-back"></div>
+                <div class="deck-count">${this.state.cpu.deck.length}</div>
+            </div>
+        `;
+    }
+
+    renderCPUDiscard() {
+        if (!this.elements.cpuDiscard) return;
+
+        const topCard = this.state.cpu.discardPile[this.state.cpu.discardPile.length - 1];
+
+        if (topCard) {
+            this.elements.cpuDiscard.innerHTML = `
+                <div class="discard-pile" title="CPU Discard (${this.state.cpu.discardPile.length} cards)">
+                    ${this.getCardMiniDisplay(topCard)}
+                    <div class="discard-count">${this.state.cpu.discardPile.length}</div>
+                </div>
+            `;
+        } else {
+            this.elements.cpuDiscard.innerHTML = '<div class="empty-discard">Discard</div>';
+        }
+    }
+
+    renderCPUPrizes() {
+        if (!this.elements.cpuPrizes) return;
+
+        this.elements.cpuPrizes.innerHTML = '';
+
+        for (let i = 0; i < 6; i++) {
+            const prizeEl = document.createElement('div');
+            prizeEl.className = `prize-card ${i < this.state.cpu.prizeCards.length ? 'active' : 'taken'}`;
+            this.elements.cpuPrizes.appendChild(prizeEl);
+        }
+    }
+
+    renderCPUHand() {
+        if (!this.elements.cpuHand) return;
+
+        this.elements.cpuHand.innerHTML = '';
+
+        for (let i = 0; i < this.state.cpu.hand.length; i++) {
+            const cardEl = document.createElement('div');
+            cardEl.className = 'card-back mini';
+            this.elements.cpuHand.appendChild(cardEl);
+        }
+
+        // Show count
+        const countEl = document.createElement('div');
+        countEl.className = 'hand-count';
+        countEl.textContent = this.state.cpu.hand.length;
+        this.elements.cpuHand.appendChild(countEl);
+    }
+
+    renderTurnInfo() {
+        if (this.elements.turnInfo) {
+            this.elements.turnInfo.textContent = `Turn ${this.state.turnNumber} - ${this.state.currentTurn === 'player' ? 'Your Turn' : "CPU's Turn"}`;
+        }
+
+        if (this.elements.phaseInfo) {
+            this.elements.phaseInfo.textContent = this.state.phase.toUpperCase();
+        }
+    }
+
+    // ============================================
+    // CARD ELEMENT CREATION
+    // ============================================
+
+    createCardElement(card, owner, zone) {
+        const cardEl = document.createElement('div');
+        cardEl.className = `card ${card.cardType} ${card.pokemonType || ''} ${card.energyType || ''}`;
+        cardEl.dataset.uid = card.uid;
+        cardEl.dataset.owner = owner;
+        cardEl.dataset.zone = zone;
+
+        cardEl.innerHTML = this.getCardHTML(card);
+
+        if (owner === 'player') {
+            cardEl.addEventListener('click', (e) => this.handleCardClick(e, card, zone));
+            cardEl.addEventListener('mouseenter', () => this.showCardDetail(card));
+            cardEl.addEventListener('mouseleave', () => this.hideCardDetail());
+        }
+
+        return cardEl;
+    }
+
+    createActivePokemonElement(activePokemon, owner, benchIndex = null) {
+        const cardEl = document.createElement('div');
+        const card = activePokemon.card;
+        cardEl.className = `card pokemon ${card.pokemonType} active-pokemon`;
+        cardEl.dataset.uid = card.uid;
+        cardEl.dataset.owner = owner;
+
+        if (benchIndex !== null) {
+            cardEl.dataset.benchIndex = benchIndex;
+            cardEl.classList.add('benched');
+        }
+
+        // Add status indicator
+        if (activePokemon.statusCondition !== StatusCondition.NONE) {
+            cardEl.classList.add(`status-${activePokemon.statusCondition}`);
+        }
+
+        cardEl.innerHTML = `
+            <div class="card-header">
+                <span class="card-name">${card.name}</span>
+                <span class="card-hp">${activePokemon.currentHP}/${card.hp} HP</span>
+            </div>
+            <div class="card-stage">${card.stage}</div>
+            <div class="hp-bar">
+                <div class="hp-fill" style="width: ${(activePokemon.currentHP / card.hp) * 100}%"></div>
+            </div>
+            <div class="energy-attached">
+                ${activePokemon.attachedEnergy.map(e => `<span class="energy-icon ${e.energyType}"></span>`).join('')}
+            </div>
+            ${activePokemon.statusCondition !== StatusCondition.NONE ?
+                `<div class="status-badge">${activePokemon.statusCondition}</div>` : ''}
+            <div class="attacks-mini">
+                ${card.attacks.map(a => `
+                    <div class="attack-mini ${activePokemon.canUseAttack(a) ? 'usable' : 'unusable'}">
+                        ${a.name} (${a.damage})
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+        cardEl.addEventListener('click', (e) => this.handleActivePokemonClick(e, activePokemon, owner, benchIndex));
+        cardEl.addEventListener('mouseenter', () => this.showActivePokemonDetail(activePokemon));
+        cardEl.addEventListener('mouseleave', () => this.hideCardDetail());
+
+        return cardEl;
+    }
+
+    getCardHTML(card) {
+        switch (card.cardType) {
+            case CardType.POKEMON:
+                // Determine artwork content - use image if available, otherwise placeholder
+                const artworkContent = card.image
+                    ? `<img src="${card.image}" alt="${card.name}" class="card-artwork-img">`
+                    : `<div class="placeholder">
+                        <span class="placeholder-icon">${card.placeholderIcon || '🎴'}</span>
+                        <span class="placeholder-text">Image Coming Soon</span>
+                       </div>`;
+
+                return `
+                    <div class="card-header">
+                        <span class="card-name">${card.name}</span>
+                        <span class="card-hp">${card.hp} HP</span>
+                    </div>
+                    <div class="card-stage">${card.stage}</div>
+                    <div class="card-type-icon ${card.pokemonType}"></div>
+                    <div class="card-artwork">
+                        ${artworkContent}
+                    </div>
+                    <div class="attacks">
+                        ${card.attacks.map(a => `
+                            <div class="attack">
+                                <span class="attack-cost">${a.cost.map(c => `<span class="energy-mini ${c}"></span>`).join('')}</span>
+                                <span class="attack-name">${a.name}</span>
+                                <span class="attack-damage">${a.damage}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="card-footer">
+                        ${card.weakness ? `<span class="weakness">Weakness: ${card.weakness} x2</span>` : ''}
+                        ${card.resistance ? `<span class="resistance">Resistance: ${card.resistance} -30</span>` : ''}
+                        <span class="retreat">Retreat: ${card.retreatCost}</span>
+                    </div>
+                `;
+
+            case CardType.ENERGY:
+                return `
+                    <div class="energy-card">
+                        <div class="energy-symbol ${card.energyType}"></div>
+                        <div class="energy-name">${card.name}</div>
+                    </div>
+                `;
+
+            case CardType.TRAINER:
+                return `
+                    <div class="trainer-card">
+                        <div class="trainer-header">
+                            <span class="trainer-name">${card.name}</span>
+                            <span class="trainer-type">${card.trainerType}</span>
+                        </div>
+                        <div class="trainer-description">${card.description}</div>
+                    </div>
+                `;
+
+            default:
+                return `<div class="unknown-card">${card.name}</div>`;
+        }
+    }
+
+
+    getCardMiniDisplay(card) {
+        return `<div class="card-mini ${card.cardType} ${card.pokemonType || card.energyType || ''}">${card.name}</div>`;
+    }
+
+    // ============================================
+    // USER INTERACTIONS
+    // ============================================
+
+    handleCardClick(e, card, zone) {
+        e.stopPropagation();
+
+        // Only allow actions on player's turn
+        if (this.state.currentTurn !== 'player') {
+            this.showMessage("Wait for your turn!");
+            return;
+        }
+
+        // If awaiting target selection
+        if (this.awaitingTarget && this.pendingAction) {
+            this.handleTargetSelection(card, zone);
+            return;
+        }
+
+        // Handle based on card type
+        switch (card.cardType) {
+            case CardType.POKEMON:
+                if (card.stage === Stage.BASIC) {
+                    this.handleBasicPokemonClick(card);
+                } else {
+                    this.handleEvolutionClick(card);
+                }
+                break;
+
+            case CardType.ENERGY:
+                this.handleEnergyClick(card);
+                break;
+
+            case CardType.TRAINER:
+                this.handleTrainerClick(card);
+                break;
+        }
+    }
+
+    handleBasicPokemonClick(card) {
+        // If no active, set as active
+        if (!this.state.player.active) {
+            this.engine.setActiveFromHand('player', card.uid);
+            this.render();
+            return;
+        }
+
+        // Otherwise, play to bench
+        if (this.state.player.bench.length < 5) {
+            this.engine.playBasicToBench('player', card.uid);
+            this.render();
+        } else {
+            this.showMessage("Bench is full!");
+        }
+    }
+
+    handleEvolutionClick(card) {
+        // Find valid evolution targets
+        const targets = [];
+
+        if (this.state.player.active &&
+            this.state.player.active.card.id === card.evolvesFrom &&
+            !this.state.player.playedThisTurn.includes(this.state.player.active.card.uid)) {
+            targets.push({ pokemon: this.state.player.active, location: 'active' });
+        }
+
+        for (let i = 0; i < this.state.player.bench.length; i++) {
+            const benched = this.state.player.bench[i];
+            if (benched.card.id === card.evolvesFrom &&
+                !this.state.player.playedThisTurn.includes(benched.card.uid)) {
+                targets.push({ pokemon: benched, location: 'bench', index: i });
+            }
+        }
+
+        if (targets.length === 0) {
+            this.showMessage(`No valid targets for ${card.name}!`);
+            return;
+        }
+
+        if (targets.length === 1) {
+            // Auto-select only target
+            this.engine.evolvePokemon('player', card.uid, targets[0].pokemon);
+            this.render();
+        } else {
+            // Show selection modal
+            this.showEvolutionTargetModal(card, targets);
+        }
+    }
+
+    handleEnergyClick(card) {
+        if (this.state.actions.hasAttachedEnergy) {
+            this.showMessage("Already attached energy this turn!");
+            return;
+        }
+
+        // Find valid targets
+        const targets = [];
+        if (this.state.player.active) {
+            targets.push(this.state.player.active);
+        }
+        targets.push(...this.state.player.bench);
+
+        if (targets.length === 0) {
+            this.showMessage("No Pokemon to attach energy to!");
+            return;
+        }
+
+        if (targets.length === 1) {
+            this.engine.attachEnergy('player', card.uid, targets[0]);
+            this.render();
+        } else {
+            // Set up target selection
+            this.awaitingTarget = true;
+            this.pendingAction = { type: 'attachEnergy', card: card };
+            this.showMessage("Select a Pokemon to attach energy to...");
+            this.highlightValidTargets(targets);
+        }
+    }
+
+    handleTrainerClick(card) {
+        if (card.trainerType === TrainerType.SUPPORTER && this.state.actions.hasPlayedSupporter) {
+            this.showMessage("Already played a Supporter this turn!");
+            return;
+        }
+
+        // Handle trainers that need targets
+        if (card.effect === 'heal' || card.effect === 'superHeal') {
+            const targets = [];
+            if (this.state.player.active && this.state.player.active.damage > 0) {
+                targets.push(this.state.player.active);
+            }
+            for (const benched of this.state.player.bench) {
+                if (benched.damage > 0) targets.push(benched);
+            }
+
+            if (targets.length === 0) {
+                this.showMessage("No damaged Pokemon to heal!");
+                return;
+            }
+
+            if (targets.length === 1) {
+                this.engine.playTrainer('player', card.uid, targets[0]);
+                this.render();
+            } else {
+                this.awaitingTarget = true;
+                this.pendingAction = { type: 'playTrainer', card: card };
+                this.showMessage("Select a Pokemon to heal...");
+                this.highlightValidTargets(targets);
+            }
+            return;
+        }
+
+        if (card.effect === 'switch') {
+            if (this.state.player.bench.length === 0) {
+                this.showMessage("No bench Pokemon to switch to!");
+                return;
+            }
+            this.awaitingTarget = true;
+            this.pendingAction = { type: 'switch', card: card };
+            this.showMessage("Select a bench Pokemon to switch to...");
+            this.highlightValidTargets(this.state.player.bench);
+            return;
+        }
+
+        if (card.effect === 'gust') {
+            if (this.state.cpu.bench.length === 0) {
+                this.showMessage("Opponent has no bench Pokemon!");
+                return;
+            }
+            this.awaitingTarget = true;
+            this.pendingAction = { type: 'gust', card: card };
+            this.showMessage("Select an opponent's bench Pokemon to bring active...");
+            this.highlightValidTargets(this.state.cpu.bench, 'cpu');
+            return;
+        }
+
+        // Play trainer directly
+        if (this.engine.playTrainer('player', card.uid)) {
+            this.render();
+        }
+    }
+
+    handleActivePokemonClick(e, activePokemon, owner, benchIndex) {
+        e.stopPropagation();
+
+        if (this.awaitingTarget) {
+            this.handleTargetSelection(activePokemon, owner === 'player' ? (benchIndex !== null ? 'bench' : 'active') : 'cpu', benchIndex);
+        }
+    }
+
+    handleTargetSelection(target, zone, benchIndex = null) {
+        if (!this.pendingAction) return;
+
+        const action = this.pendingAction;
+        this.awaitingTarget = false;
+        this.pendingAction = null;
+        this.clearHighlights();
+
+        switch (action.type) {
+            case 'attachEnergy':
+                this.engine.attachEnergy('player', action.card.uid, target);
+                break;
+
+            case 'playTrainer':
+                this.engine.playTrainer('player', action.card.uid, target);
+                break;
+
+            case 'switch':
+                // Use switch trainer to swap
+                const benchIdx = this.state.player.bench.indexOf(target);
+                if (benchIdx !== -1) {
+                    const oldActive = this.state.player.active;
+                    this.state.player.active = this.state.player.bench.splice(benchIdx, 1)[0];
+                    this.state.player.bench.push(oldActive);
+
+                    // Discard switch card
+                    const cardIndex = this.state.player.hand.findIndex(c => c.uid === action.card.uid);
+                    if (cardIndex !== -1) {
+                        const card = this.state.player.hand.splice(cardIndex, 1)[0];
+                        this.state.player.discardPile.push(card);
+                    }
+
+                    this.state.log(`Switched ${oldActive.card.name} with ${this.state.player.active.card.name}!`);
+                }
+                break;
+
+            case 'gust':
+                const cpuBenchIdx = this.state.cpu.bench.indexOf(target);
+                if (cpuBenchIdx !== -1) {
+                    const oldCpuActive = this.state.cpu.active;
+                    this.state.cpu.active = this.state.cpu.bench.splice(cpuBenchIdx, 1)[0];
+                    if (oldCpuActive) {
+                        this.state.cpu.bench.push(oldCpuActive);
+                    }
+
+                    // Discard boss's orders
+                    const cardIndex = this.state.player.hand.findIndex(c => c.uid === action.card.uid);
+                    if (cardIndex !== -1) {
+                        const card = this.state.player.hand.splice(cardIndex, 1)[0];
+                        this.state.player.discardPile.push(card);
+                    }
+                    this.state.actions.hasPlayedSupporter = true;
+
+                    this.state.log(`Boss's Orders brought ${this.state.cpu.active.card.name} to the active position!`);
+                }
+                break;
+
+            case 'retreat':
+                const retBenchIdx = this.state.player.bench.indexOf(target);
+                if (retBenchIdx !== -1) {
+                    this.engine.retreat('player', retBenchIdx);
+                }
+                break;
+
+            case 'chooseActive':
+                const replaceBenchIdx = this.state.player.bench.indexOf(target);
+                if (replaceBenchIdx !== -1) {
+                    this.engine.setActiveFromBench('player', replaceBenchIdx);
+                }
+                break;
+        }
+
+        this.render();
+    }
+
+    handleActionButton(action) {
+        if (this.state.currentTurn !== 'player') return;
+
+        switch (action) {
+            case 'attack':
+                this.showAttackModal();
+                break;
+
+            case 'retreat':
+                if (this.state.player.bench.length === 0) {
+                    this.showMessage("No bench Pokemon to retreat to!");
+                    return;
+                }
+                this.awaitingTarget = true;
+                this.pendingAction = { type: 'retreat' };
+                this.showMessage("Select a bench Pokemon to switch to...");
+                this.highlightValidTargets(this.state.player.bench);
+                break;
+
+            case 'endTurn':
+                this.endPlayerTurn();
+                break;
+        }
+    }
+
+    // ============================================
+    // ACTION BUTTONS
+    // ============================================
+
+    updateActionButtons() {
+        const isPlayerTurn = this.state.currentTurn === 'player';
+        const player = this.state.player;
+
+        // Attack button
+        if (this.elements.attackBtn) {
+            const canAttack = isPlayerTurn &&
+                player.active &&
+                player.active.getUsableAttacks().length > 0;
+            this.elements.attackBtn.disabled = !canAttack;
+        }
+
+        // Retreat button
+        if (this.elements.retreatBtn) {
+            const canRetreat = isPlayerTurn &&
+                !this.state.actions.hasRetreated &&
+                player.active &&
+                player.bench.length > 0 &&
+                player.active.attachedEnergy.length >= player.active.card.retreatCost &&
+                player.active.statusCondition !== StatusCondition.ASLEEP &&
+                player.active.statusCondition !== StatusCondition.PARALYZED;
+            this.elements.retreatBtn.disabled = !canRetreat;
+
+            if (player.active) {
+                this.elements.retreatBtn.title = `Retreat cost: ${player.active.card.retreatCost} energy`;
+            }
+        }
+
+        // End turn button
+        if (this.elements.endTurnBtn) {
+            this.elements.endTurnBtn.disabled = !isPlayerTurn;
+        }
+    }
+
+    // ============================================
+    // MODALS
+    // ============================================
+
+    showModal(title, content) {
+        if (!this.elements.modal) return;
+
+        this.elements.modalTitle.textContent = title;
+        this.elements.modalContent.innerHTML = content;
+        this.elements.modal.classList.add('active');
+    }
+
+    hideModal() {
+        if (!this.elements.modal) return;
+        this.elements.modal.classList.remove('active');
+    }
+
+    showAttackModal() {
+        if (!this.state.player.active) return;
+
+        const attacks = this.state.player.active.card.attacks;
+        let content = '<div class="attack-selection">';
+
+        attacks.forEach((attack, index) => {
+            const canUse = this.state.player.active.canUseAttack(attack);
+            content += `
+                <div class="attack-option ${canUse ? 'usable' : 'unusable'}" data-index="${index}" ${canUse ? '' : 'disabled'}>
+                    <div class="attack-header">
+                        <span class="attack-cost">${attack.cost.map(c => `<span class="energy-mini ${c}"></span>`).join('')}</span>
+                        <span class="attack-name">${attack.name}</span>
+                        <span class="attack-damage">${attack.damage}</span>
+                    </div>
+                    <div class="attack-description">${attack.description}</div>
+                </div>
+            `;
+        });
+
+        content += '</div>';
+
+        this.showModal('Choose an Attack', content);
+
+        // Bind attack selection
+        document.querySelectorAll('.attack-option.usable').forEach(el => {
+            el.addEventListener('click', () => {
+                const index = parseInt(el.dataset.index);
+                this.hideModal();
+                this.executeAttack(index);
+            });
+        });
+    }
+
+    showEvolutionTargetModal(evolutionCard, targets) {
+        let content = '<div class="evolution-targets">';
+
+        targets.forEach((target, index) => {
+            content += `
+                <div class="evolution-target" data-index="${index}">
+                    <div class="target-name">${target.pokemon.card.name}</div>
+                    <div class="target-location">${target.location === 'active' ? 'Active' : `Bench #${target.index + 1}`}</div>
+                    <div class="target-hp">${target.pokemon.currentHP} HP</div>
+                </div>
+            `;
+        });
+
+        content += '</div>';
+
+        this.showModal(`Evolve into ${evolutionCard.name}`, content);
+
+        // Bind target selection
+        document.querySelectorAll('.evolution-target').forEach(el => {
+            el.addEventListener('click', () => {
+                const index = parseInt(el.dataset.index);
+                this.hideModal();
+                this.engine.evolvePokemon('player', evolutionCard.uid, targets[index].pokemon);
+                this.render();
+            });
+        });
+    }
+
+    // ============================================
+    // GAME ACTIONS
+    // ============================================
+
+    async executeAttack(attackIndex) {
+        const success = this.engine.attack('player', attackIndex);
+
+        if (success) {
+            this.render();
+
+            // Check for knockout - CPU needs to choose new active
+            if (!this.state.cpu.active && this.state.cpu.bench.length > 0 && !this.state.gameOver) {
+                await this.cpu.chooseNewActive();
+                this.render();
+            }
+
+            // End turn after attack
+            if (!this.state.gameOver) {
+                setTimeout(() => this.endPlayerTurn(), 500);
+            }
+        }
+    }
+
+    async endPlayerTurn() {
+        // Check if player needs to choose new active
+        if (!this.state.player.active && this.state.player.bench.length > 0) {
+            this.showMessage("Choose a Pokemon to become active!");
+            this.awaitingTarget = true;
+            this.pendingAction = { type: 'chooseActive' };
+            this.highlightValidTargets(this.state.player.bench);
+            return;
+        }
+
+        this.engine.endTurn();
+        this.render();
+
+        // CPU turn
+        if (!this.state.gameOver && this.state.currentTurn === 'cpu') {
+            await this.executeCPUTurn();
+        }
+    }
+
+    async executeCPUTurn() {
+        // Start CPU turn
+        this.engine.startTurn();
+        this.render();
+
+        // CPU needs active if none
+        if (!this.state.cpu.active && this.state.cpu.bench.length > 0) {
+            await this.cpu.chooseNewActive();
+            this.render();
+        }
+
+        // Execute CPU AI
+        await this.cpu.executeTurn();
+        this.render();
+
+        // Check if player needs new active
+        if (!this.state.player.active && this.state.player.bench.length > 0 && !this.state.gameOver) {
+            this.state.log("Choose a Pokemon to become active!");
+            this.awaitingTarget = true;
+            this.pendingAction = { type: 'chooseActive' };
+            this.highlightValidTargets(this.state.player.bench);
+            return;
+        }
+
+        // Switch back to player
+        if (!this.state.gameOver) {
+            this.engine.startTurn();
+            this.render();
+        }
+    }
+
+    // ============================================
+    // HELPERS
+    // ============================================
+
+    showMessage(text) {
+        this.addLogEntry({ message: text, timestamp: Date.now() });
+    }
+
+    addLogEntry(entry) {
+        if (!this.elements.gameLog) return;
+
+        const logEntry = document.createElement('div');
+        logEntry.className = 'log-entry';
+        logEntry.textContent = entry.message;
+        this.elements.gameLog.appendChild(logEntry);
+        this.elements.gameLog.scrollTop = this.elements.gameLog.scrollHeight;
+    }
+
+    highlightValidTargets(targets, owner = 'player') {
+        // Add highlight class to valid targets
+        document.querySelectorAll('.card').forEach(el => {
+            el.classList.remove('valid-target');
+        });
+
+        for (const target of targets) {
+            const uid = target.card ? target.card.uid : target.uid;
+            const el = document.querySelector(`[data-uid="${uid}"]`);
+            if (el) {
+                el.classList.add('valid-target');
+            }
+        }
+    }
+
+    clearHighlights() {
+        document.querySelectorAll('.valid-target').forEach(el => {
+            el.classList.remove('valid-target');
+        });
+    }
+
+    showCardDetail(card) {
+        if (!this.elements.cardDetail) return;
+
+        this.elements.cardDetail.innerHTML = this.getCardDetailHTML(card);
+        this.elements.cardDetail.classList.add('active');
+    }
+
+    showActivePokemonDetail(activePokemon) {
+        if (!this.elements.cardDetail) return;
+
+        const card = activePokemon.card;
+        let html = this.getCardDetailHTML(card);
+
+        // Add active Pokemon specific info
+        html += `
+            <div class="detail-status">
+                <div>HP: ${activePokemon.currentHP}/${card.hp}</div>
+                <div>Attached Energy: ${activePokemon.attachedEnergy.map(e => e.energyType).join(', ') || 'None'}</div>
+                <div>Status: ${activePokemon.statusCondition}</div>
+            </div>
+        `;
+
+        this.elements.cardDetail.innerHTML = html;
+        this.elements.cardDetail.classList.add('active');
+    }
+
+    hideCardDetail() {
+        if (!this.elements.cardDetail) return;
+        this.elements.cardDetail.classList.remove('active');
+    }
+
+    getCardDetailHTML(card) {
+        if (card.cardType === CardType.POKEMON) {
+            return `
+                <div class="detail-header ${card.pokemonType}">
+                    <h3>${card.name}</h3>
+                    <span>${card.hp} HP</span>
+                </div>
+                <div class="detail-body">
+                    <div class="detail-stage">${card.stage}${card.evolvesFrom ? ` (from ${card.evolvesFrom})` : ''}</div>
+                    <div class="detail-attacks">
+                        ${card.attacks.map(a => `
+                            <div class="detail-attack">
+                                <div class="attack-header">
+                                    <span>${a.cost.map(c => `[${c}]`).join('')}</span>
+                                    <span>${a.name}</span>
+                                    <span>${a.damage}</span>
+                                </div>
+                                <div class="attack-desc">${a.description}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="detail-footer">
+                        ${card.weakness ? `Weakness: ${card.weakness} x2` : ''}
+                        ${card.resistance ? `Resistance: ${card.resistance} -30` : ''}
+                        Retreat: ${card.retreatCost}
+                    </div>
+                </div>
+            `;
+        } else if (card.cardType === CardType.TRAINER) {
+            return `
+                <div class="detail-header trainer">
+                    <h3>${card.name}</h3>
+                    <span>${card.trainerType}</span>
+                </div>
+                <div class="detail-body">
+                    <p>${card.description}</p>
+                </div>
+            `;
+        } else {
+            return `
+                <div class="detail-header ${card.energyType}">
+                    <h3>${card.name}</h3>
+                </div>
+            `;
+        }
+    }
+
+    showGameOver() {
+        if (!this.elements.gameOverScreen) return;
+
+        const isWinner = this.state.winner === 'player';
+        this.elements.gameOverMessage.textContent = isWinner ?
+            '🏆 Victory! You won the battle!' :
+            '💀 Defeat! The CPU won this time!';
+        this.elements.gameOverScreen.classList.add('active');
+    }
+
+    startNewGame() {
+        this.elements.gameOverScreen?.classList.remove('active');
+        window.startNewGame();
+    }
+}
+
+// Global log update function
+window.updateGameLog = function (entry) {
+    if (window.gameUI) {
+        window.gameUI.addLogEntry(entry);
+    }
+};
+
+// Make globally available
+window.GameUI = GameUI;

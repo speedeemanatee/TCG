@@ -1,0 +1,551 @@
+/* =============================================================================
+   POKEMON TCG - CARD STYLING SYSTEM
+   =============================================================================
+   This CSS creates premium card designs that work in two modes:
+   1. CSS-only mode: Uses gradients and icons as placeholders
+   2. Image mode: Displays actual Pokemon artwork when --card-image is set
+   
+   To add images later, simply update the card's --card-image CSS variable
+   with the path to the artwork, e.g.:
+   .card[data-card-id="charmander"] { --card-image: url('../assets/charmander.png'); }
+============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   CSS VARIABLES & DESIGN TOKENS
+----------------------------------------------------------------------------- */
+:root {
+  /* Type Colors */
+  --type-fire: #F08030;
+  --type-fire-dark: #9C531F;
+  --type-fire-light: #FFCB6B;
+  --type-fire-gradient: linear-gradient(135deg, #FF6B35 0%, #F7931A 50%, #FFD700 100%);
+  
+  --type-water: #6890F0;
+  --type-water-dark: #445E9C;
+  --type-water-light: #9DB7F5;
+  --type-water-gradient: linear-gradient(135deg, #0077BE 0%, #00A8E8 50%, #89CFF0 100%);
+  
+  --type-grass: #78C850;
+  --type-grass-dark: #4E8234;
+  --type-grass-light: #A7DB8D;
+  
+  --type-electric: #F8D030;
+  --type-psychic: #F85888;
+  --type-fighting: #C03028;
+  --type-colorless: #A8A878;
+  
+  /* Card Frame Colors */
+  --card-border-gold: linear-gradient(135deg, #B8860B, #FFD700, #DAA520, #FFD700, #B8860B);
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --card-inner-shadow: inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.2);
+  
+  /* Card Dimensions */
+  --card-width: 250px;
+  --card-height: 350px;
+  --card-radius: 12px;
+  
+  /* Holographic Effect */
+  --holo-gradient: linear-gradient(
+    125deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.1) 25%,
+    rgba(255,255,255,0.3) 50%,
+    rgba(255,255,255,0.1) 75%,
+    rgba(255,255,255,0) 100%
+  );
+}
+
+/* -----------------------------------------------------------------------------
+   BASE CARD STRUCTURE
+----------------------------------------------------------------------------- */
+.pokemon-card {
+  --card-image: none; /* Override this to add artwork */
+  --type-color: var(--type-colorless);
+  --type-gradient: linear-gradient(135deg, #888 0%, #aaa 50%, #ccc 100%);
+  
+  position: relative;
+  width: var(--card-width);
+  height: var(--card-height);
+  border-radius: var(--card-radius);
+  background: var(--type-gradient);
+  box-shadow: var(--card-shadow);
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  flex-shrink: 0;
+}
+
+.pokemon-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Holographic overlay */
+.pokemon-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--holo-gradient);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.pokemon-card:hover::before {
+  opacity: 1;
+  animation: holoShine 1.5s ease-in-out infinite;
+}
+
+@keyframes holoShine {
+  0%, 100% { background-position: -200% center; }
+  50% { background-position: 200% center; }
+}
+
+/* Card inner frame */
+.pokemon-card .card-frame {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.1) 100%);
+  border-radius: 8px;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+/* -----------------------------------------------------------------------------
+   TYPE-SPECIFIC STYLING
+----------------------------------------------------------------------------- */
+.pokemon-card.type-fire {
+  --type-color: var(--type-fire);
+  --type-gradient: var(--type-fire-gradient);
+}
+
+.pokemon-card.type-water {
+  --type-color: var(--type-water);
+  --type-gradient: var(--type-water-gradient);
+}
+
+.pokemon-card.type-grass {
+  --type-color: var(--type-grass);
+  --type-gradient: linear-gradient(135deg, #228B22 0%, #32CD32 50%, #90EE90 100%);
+}
+
+.pokemon-card.type-electric {
+  --type-color: var(--type-electric);
+  --type-gradient: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFFF00 100%);
+}
+
+.pokemon-card.type-psychic {
+  --type-color: var(--type-psychic);
+  --type-gradient: linear-gradient(135deg, #9932CC 0%, #DA70D6 50%, #FFB6C1 100%);
+}
+
+/* -----------------------------------------------------------------------------
+   CARD HEADER (Name, HP, Type)
+----------------------------------------------------------------------------- */
+.card-header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px 8px;
+  z-index: 2;
+}
+
+.card-stage {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.9);
+  background: rgba(0,0,0,0.4);
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+}
+
+.card-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  margin-top: 16px;
+}
+
+.card-hp {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 16px;
+}
+
+.hp-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hp-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+}
+
+.type-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  background: rgba(0,0,0,0.3);
+  border: 2px solid rgba(255,255,255,0.3);
+  margin-left: 8px;
+}
+
+/* -----------------------------------------------------------------------------
+   CARD ARTWORK AREA
+   - Shows CSS placeholder by default
+   - When --card-image is set, displays the actual artwork
+----------------------------------------------------------------------------- */
+.card-artwork {
+  position: relative;
+  height: 140px;
+  margin: 8px 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: 
+    var(--card-image),
+    linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.2) 100%);
+  background-size: cover;
+  background-position: center;
+  border: 3px solid rgba(255,255,255,0.3);
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* Placeholder content when no image */
+.card-artwork .placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.1) 0%,
+    rgba(0,0,0,0.3) 100%
+  );
+}
+
+.card-artwork .placeholder-icon {
+  font-size: 48px;
+  opacity: 0.6;
+  margin-bottom: 8px;
+}
+
+.card-artwork .placeholder-text {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Hide placeholder when image is set */
+.pokemon-card.has-image .card-artwork .placeholder {
+  display: none;
+}
+
+/* -----------------------------------------------------------------------------
+   ATTACK SECTION
+----------------------------------------------------------------------------- */
+.card-attacks {
+  padding: 8px 12px;
+}
+
+.attack {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  margin-bottom: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.attack:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.attack-cost {
+  display: flex;
+  gap: 3px;
+  margin-right: 10px;
+}
+
+.energy-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.energy-icon.fire { background: var(--type-fire); }
+.energy-icon.water { background: var(--type-water); }
+.energy-icon.grass { background: var(--type-grass); }
+.energy-icon.electric { background: var(--type-electric); }
+.energy-icon.psychic { background: var(--type-psychic); }
+.energy-icon.fighting { background: var(--type-fighting); }
+.energy-icon.colorless { background: var(--type-colorless); }
+
+.attack-info {
+  flex: 1;
+}
+
+.attack-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+}
+
+.attack-effect {
+  font-size: 9px;
+  color: rgba(255,255,255,0.7);
+  margin-top: 2px;
+}
+
+.attack-damage {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  min-width: 35px;
+  text-align: right;
+}
+
+/* -----------------------------------------------------------------------------
+   CARD FOOTER (Weakness, Resistance, Retreat)
+----------------------------------------------------------------------------- */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 12px 10px;
+  font-size: 9px;
+  color: rgba(255,255,255,0.8);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  margin: 0 12px;
+}
+
+.footer-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.footer-label {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+  font-size: 7px;
+}
+
+.footer-value {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.footer-value .energy-icon {
+  width: 14px;
+  height: 14px;
+  font-size: 8px;
+}
+
+.footer-modifier {
+  font-weight: 700;
+  font-size: 11px;
+}
+
+/* -----------------------------------------------------------------------------
+   ENERGY CARDS
+----------------------------------------------------------------------------- */
+.pokemon-card.energy-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pokemon-card.energy-card .energy-symbol {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  background: rgba(0,0,0,0.2);
+  border: 4px solid rgba(255,255,255,0.3);
+  box-shadow: 
+    0 4px 20px rgba(0,0,0,0.3),
+    inset 0 2px 10px rgba(255,255,255,0.2);
+}
+
+.pokemon-card.energy-card .energy-label {
+  position: absolute;
+  bottom: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* -----------------------------------------------------------------------------
+   TRAINER CARDS
+----------------------------------------------------------------------------- */
+.pokemon-card.trainer-card {
+  --type-gradient: linear-gradient(135deg, #2C3E50 0%, #4CA1AF 50%, #2C3E50 100%);
+}
+
+.pokemon-card.trainer-card.item {
+  --type-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+.pokemon-card.trainer-card.supporter {
+  --type-gradient: linear-gradient(135deg, #4a0e0e 0%, #8b2323 50%, #4a0e0e 100%);
+}
+
+.trainer-card .card-effect {
+  padding: 12px 16px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.9);
+  line-height: 1.5;
+  text-align: center;
+  background: rgba(0,0,0,0.2);
+  margin: 8px 12px;
+  border-radius: 6px;
+}
+
+/* -----------------------------------------------------------------------------
+   CARD STATES
+----------------------------------------------------------------------------- */
+.pokemon-card.selected {
+  box-shadow: 0 0 0 4px #FFD700, var(--card-shadow);
+  transform: translateY(-4px);
+}
+
+.pokemon-card.disabled {
+  filter: grayscale(0.5) brightness(0.7);
+  pointer-events: none;
+}
+
+.pokemon-card.face-down {
+  background: 
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="%23FFD700" stroke-width="3"/><circle cx="50" cy="50" r="30" fill="%23CC0000"/><circle cx="50" cy="50" r="15" fill="%23fff"/></svg>') center/60% no-repeat,
+    linear-gradient(135deg, #1a237e 0%, #283593 50%, #1a237e 100%);
+}
+
+.pokemon-card.face-down * {
+  visibility: hidden;
+}
+
+/* -----------------------------------------------------------------------------
+   MINI CARD VIEW (for hand/bench display)
+----------------------------------------------------------------------------- */
+.pokemon-card.mini {
+  --card-width: 80px;
+  --card-height: 112px;
+  --card-radius: 6px;
+}
+
+.pokemon-card.mini .card-header {
+  padding: 6px 8px 4px;
+}
+
+.pokemon-card.mini .card-stage {
+  font-size: 6px;
+  padding: 1px 4px;
+}
+
+.pokemon-card.mini .card-name {
+  font-size: 10px;
+  margin-top: 10px;
+}
+
+.pokemon-card.mini .hp-value {
+  font-size: 12px;
+}
+
+.pokemon-card.mini .hp-label {
+  font-size: 6px;
+}
+
+.pokemon-card.mini .type-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 10px;
+}
+
+.pokemon-card.mini .card-artwork {
+  height: 50px;
+  margin: 4px 8px;
+}
+
+.pokemon-card.mini .card-attacks,
+.pokemon-card.mini .card-footer {
+  display: none;
+}
+
+/* -----------------------------------------------------------------------------
+   DAMAGE COUNTER OVERLAY
+----------------------------------------------------------------------------- */
+.damage-counter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(220, 20, 20, 0.9);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  z-index: 20;
+}
+
+/* -----------------------------------------------------------------------------
+   IMAGE INTEGRATION HELPERS
+   When ready to add images, create a separate CSS file (card-images.css) with:
+   
+   .pokemon-card[data-card-id="charmander"] {
+     --card-image: url('../assets/charmander.png');
+   }
+   .pokemon-card[data-card-id="charmander"].has-image .placeholder { display: none; }
+   
+   Then link that file and add class="has-image" to cards with images.
+----------------------------------------------------------------------------- */

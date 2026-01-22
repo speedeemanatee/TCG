@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon TCG - Battle Arena</title>
+    <meta name="description" content="Play Pokémon Trading Card Game against a CPU opponent">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen active">
+        <div class="start-content">
+            <h1 class="game-title">
+                <span class="title-poke">Pokémon</span>
+                <span class="title-tcg">TCG</span>
+            </h1>
+            <p class="subtitle">Battle Arena</p>
+            <div class="deck-preview">
+                <div class="deck-choice player-deck">
+                    <div class="deck-icon fire"></div>
+                    <h3>Fire Deck</h3>
+                    <p>Charizard, Arcanine, Ninetales</p>
+                </div>
+                <div class="vs-badge">VS</div>
+                <div class="deck-choice cpu-deck">
+                    <div class="deck-icon water"></div>
+                    <h3>Water Deck</h3>
+                    <p>Blastoise, Golduck, Lapras</p>
+                </div>
+            </div>
+            <button id="start-game-btn" class="start-btn">
+                <span>Start Battle!</span>
+                <div class="btn-glow"></div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Game Screen -->
+    <div id="game-screen" class="screen">
+        <!-- Game Header -->
+        <header class="game-header">
+            <div class="header-left">
+                <span id="turn-info">Turn 1 - Your Turn</span>
+            </div>
+            <div class="header-center">
+                <h1>Pokémon TCG</h1>
+            </div>
+            <div class="header-right">
+                <span id="phase-info">MAIN</span>
+            </div>
+        </header>
+
+        <!-- Game Board -->
+        <main class="game-board">
+            <!-- CPU Side -->
+            <section class="cpu-side">
+                <div class="side-info">
+                    <h2>CPU</h2>
+                    <div id="cpu-hand" class="hand-display cpu-hand"></div>
+                </div>
+                
+                <div class="play-area">
+                    <div class="prizes-zone">
+                        <h3>Prizes</h3>
+                        <div id="cpu-prizes" class="prize-cards"></div>
+                    </div>
+                    
+                    <div class="deck-discard-zone">
+                        <div class="deck-zone">
+                            <h3>Deck</h3>
+                            <div id="cpu-deck" class="deck"></div>
+                        </div>
+                        <div class="discard-zone">
+                            <h3>Discard</h3>
+                            <div id="cpu-discard" class="discard"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bench-zone">
+                        <h3>Bench</h3>
+                        <div id="cpu-bench" class="bench"></div>
+                    </div>
+                    
+                    <div class="active-zone">
+                        <h3>Active</h3>
+                        <div id="cpu-active" class="active-pokemon"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Battle Zone Divider -->
+            <div class="battle-divider">
+                <div class="divider-line"></div>
+                <div class="battle-icon">⚔️</div>
+                <div class="divider-line"></div>
+            </div>
+
+            <!-- Player Side -->
+            <section class="player-side">
+                <div class="play-area">
+                    <div class="active-zone">
+                        <h3>Active</h3>
+                        <div id="player-active" class="active-pokemon"></div>
+                    </div>
+                    
+                    <div class="bench-zone">
+                        <h3>Bench</h3>
+                        <div id="player-bench" class="bench"></div>
+                    </div>
+                    
+                    <div class="deck-discard-zone">
+                        <div class="deck-zone">
+                            <h3>Deck</h3>
+                            <div id="player-deck" class="deck"></div>
+                        </div>
+                        <div class="discard-zone">
+                            <h3>Discard</h3>
+                            <div id="player-discard" class="discard"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="prizes-zone">
+                        <h3>Prizes</h3>
+                        <div id="player-prizes" class="prize-cards"></div>
+                    </div>
+                </div>
+                
+                <div class="side-info player-info">
+                    <h2>Your Hand</h2>
+                    <div id="player-hand" class="hand-display player-hand"></div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Action Panel -->
+        <aside class="action-panel" id="action-panel">
+            <div class="action-buttons">
+                <button id="attack-btn" class="action-btn attack" disabled>
+                    <span class="btn-icon">⚡</span>
+                    <span>Attack</span>
+                </button>
+                <button id="retreat-btn" class="action-btn retreat" disabled>
+                    <span class="btn-icon">🔄</span>
+                    <span>Retreat</span>
+                </button>
+                <button id="end-turn-btn" class="action-btn end-turn" disabled>
+                    <span class="btn-icon">➡️</span>
+                    <span>End Turn</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Game Log -->
+        <aside class="game-log-panel">
+            <h3>Game Log</h3>
+            <div id="game-log" class="game-log"></div>
+        </aside>
+
+        <!-- Card Detail Panel -->
+        <div id="card-detail" class="card-detail-panel"></div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <button id="modal-close" class="modal-close">&times;</button>
+            <h2 id="modal-title"></h2>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" class="overlay">
+        <div class="game-over-content">
+            <h1 id="game-over-message">Game Over!</h1>
+            <button id="new-game-btn" class="start-btn">
+                <span>Play Again</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/cards.js"></script>
+    <script src="js/gameState.js"></script>
+    <script src="js/gameEngine.js"></script>
+    <script src="js/cpuAI.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        // Hide start screen and show game screen when starting
+        document.getElementById('start-game-btn').addEventListener('click', function() {
+            document.getElementById('start-screen').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
+        });
+    </script>
+</body>
+</html>
