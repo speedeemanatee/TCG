@@ -12,6 +12,11 @@ class GameUI {
         this.awaitingTarget = false;
         this.pendingAction = null;
 
+        // TTS State
+        this.ttsEnabled = false;
+        this.speechSynth = window.speechSynthesis;
+        this.currentUtterance = null;
+
         // DOM element cache
         this.elements = {};
 
@@ -71,7 +76,17 @@ class GameUI {
             // Game over
             gameOverScreen: document.getElementById('game-over-screen'),
             gameOverMessage: document.getElementById('game-over-message'),
-            newGameBtn: document.getElementById('new-game-btn')
+            newGameBtn: document.getElementById('new-game-btn'),
+
+            // Feedback form
+            feedbackForm: document.getElementById('feedback-form'),
+            captchaQuestion: document.getElementById('captcha-question'),
+            captchaAnswer: document.getElementById('captcha-answer'),
+            captchaAnswer: document.getElementById('captcha-answer'),
+            submitFeedbackBtn: document.getElementById('submit-feedback-btn'),
+
+            // TTS
+            ttsSwitch: document.getElementById('tts-switch')
         };
     }
 
@@ -92,6 +107,16 @@ class GameUI {
             if (e.target === this.elements.modal) {
                 this.hideModal();
             }
+        });
+
+        // Feedback form submission
+        // Feedback form submission
+        this.elements.feedbackForm?.addEventListener('submit', (e) => this.handleFeedbackSubmit(e));
+
+        // TTS Toggle
+        this.elements.ttsSwitch?.addEventListener('change', (e) => {
+            this.ttsEnabled = e.target.checked;
+            this.cancelSpeech();
         });
     }
 
@@ -324,8 +349,15 @@ class GameUI {
 
         if (owner === 'player') {
             cardEl.addEventListener('click', (e) => this.handleCardClick(e, card, zone));
-            cardEl.addEventListener('mouseenter', () => this.showCardDetail(card));
-            cardEl.addEventListener('mouseleave', () => this.hideCardDetail());
+            cardEl.addEventListener('click', (e) => this.handleCardClick(e, card, zone));
+            cardEl.addEventListener('mouseenter', () => {
+                this.showCardDetail(card);
+                if (this.ttsEnabled) this.speakCard(card);
+            });
+            cardEl.addEventListener('mouseleave', () => {
+                this.hideCardDetail();
+                this.cancelSpeech();
+            });
         }
 
         return cardEl;
@@ -372,8 +404,15 @@ class GameUI {
         `;
 
         cardEl.addEventListener('click', (e) => this.handleActivePokemonClick(e, activePokemon, owner, benchIndex));
-        cardEl.addEventListener('mouseenter', () => this.showActivePokemonDetail(activePokemon));
-        cardEl.addEventListener('mouseleave', () => this.hideCardDetail());
+        cardEl.addEventListener('click', (e) => this.handleActivePokemonClick(e, activePokemon, owner, benchIndex));
+        cardEl.addEventListener('mouseenter', () => {
+            this.showActivePokemonDetail(activePokemon);
+            if (this.ttsEnabled) this.speakCard(activePokemon.card);
+        });
+        cardEl.addEventListener('mouseleave', () => {
+            this.hideCardDetail();
+            this.cancelSpeech();
+        });
 
         return cardEl;
     }
@@ -789,6 +828,48 @@ class GameUI {
         this.elements.modal.classList.remove('active');
     }
 
+    // ============================================
+    // TEXT TO SPEECH
+    // ============================================
+
+    speakCard(card) {
+        if (!this.speechSynth) return;
+        this.cancelSpeech();
+
+        let text = '';
+
+        if (card.cardType === CardType.POKEMON) {
+            text += `${card.name}. ${card.hp} Hit Points. ${card.pokemonType} type. ${card.stage} Pokémon. `;
+            text += `Attacks: `;
+            card.attacks.forEach(attack => {
+                text += `${attack.name}, ${attack.damage} damage. ${attack.description || ''} `;
+            });
+        } else if (card.cardType === CardType.TRAINER) {
+            text += `${card.name}. ${card.trainerType} card. ${card.description} `;
+        } else if (card.cardType === CardType.ENERGY) {
+            text += `${card.name}. `;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+
+        // Try to pick a clear voice if available (e.g., Google US English)
+        const voices = this.speechSynth.getVoices();
+        const preferredVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Samantha'));
+        if (preferredVoice) utterance.voice = preferredVoice;
+
+        this.currentUtterance = utterance;
+        this.speechSynth.speak(utterance);
+    }
+
+    cancelSpeech() {
+        if (this.speechSynth) {
+            this.speechSynth.cancel();
+            this.currentUtterance = null;
+        }
+    }
+
     showAttackModal() {
         if (!this.state.player.active) return;
 
@@ -1049,6 +1130,108 @@ class GameUI {
             '🏆 Victory! You won the battle!' :
             '💀 Defeat! The CPU won this time!';
         this.elements.gameOverScreen.classList.add('active');
+
+        // Initialize feedback form
+        this.initFeedbackForm();
+    }
+
+    initFeedbackForm() {
+        if (!this.elements.feedbackForm) return;
+
+        // Reset form
+        this.elements.feedbackForm.reset();
+        this.elements.submitFeedbackBtn.disabled = false;
+
+        // Generate captcha
+        this.generateCaptcha();
+    }
+
+    generateCaptcha() {
+        const num1 = Math.floor(Math.random() * 10) + 1;
+        const num2 = Math.floor(Math.random() * 10) + 1;
+        this.captchaResult = num1 + num2;
+
+        if (this.elements.captchaQuestion) {
+            this.elements.captchaQuestion.textContent = `What is ${num1} + ${num2}?`;
+        }
+
+        if (this.elements.captchaAnswer) {
+            this.elements.captchaAnswer.value = '';
+        }
+    }
+
+    handleFeedbackSubmit(e) {
+        e.preventDefault();
+
+        const userAnswer = parseInt(this.elements.captchaAnswer.value);
+
+        if (userAnswer !== this.captchaResult) {
+            this.showMessage("Human verification failed! Please try again.");
+            this.generateCaptcha();
+            return;
+        }
+
+        const quality = document.getElementById('feedback-quality').value;
+        const bugs = document.getElementById('feedback-bugs').value || "None";
+        const enhancements = document.getElementById('feedback-enhancements').value || "None";
+
+        // Disable button while processing
+        this.elements.submitFeedbackBtn.disabled = true;
+        this.elements.submitFeedbackBtn.textContent = 'Saving...';
+
+        try {
+            // 1. Create feedback object
+            const newFeedback = {
+                timestamp: new Date().toISOString(),
+                quality: quality,
+                bugs: bugs.replace(/"/g, '""'), // Escape quotes for CSV
+                enhancements: enhancements.replace(/"/g, '""') // Escape quotes for CSV
+            };
+
+            // 2. Save to localStorage
+            const existingData = JSON.parse(localStorage.getItem('pokemon-tcg-feedback') || '[]');
+            existingData.push(newFeedback);
+            localStorage.setItem('pokemon-tcg-feedback', JSON.stringify(existingData));
+
+            // 3. Generate CSV
+            // Headers
+            let csvContent = "Timestamp,Quality,Bugs,Enhancements\n";
+
+            // Rows
+            existingData.forEach(row => {
+                const bugText = `"${row.bugs}"`;
+                const enhanceText = `"${row.enhancements}"`;
+                csvContent += `${row.timestamp},${row.quality},${bugText},${enhanceText}\n`;
+            });
+
+            // 4. Trigger Download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "pokemon_tcg_feedback.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // 5. Show success
+            this.showMessage("Feedback saved! Downloading CSV...");
+            this.elements.feedbackForm.innerHTML = `
+                <div class="success-message">
+                    <p>✅ Feedback saved successfully!</p>
+                    <p style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--text-secondary);">
+                        A CSV file has been downloaded with your feedback.
+                    </p>
+                </div>
+            `;
+
+        } catch (error) {
+            console.error("Feedback error:", error);
+            this.showMessage("Error saving feedback.");
+            this.elements.submitFeedbackBtn.disabled = false;
+            this.elements.submitFeedbackBtn.textContent = 'Send Feedback';
+        }
     }
 
     startNewGame() {

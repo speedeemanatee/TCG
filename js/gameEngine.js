@@ -35,7 +35,10 @@ class GameEngine {
             'fire': createFireDeck,
             'water': createWaterDeck,
             'grass': createGrassDeck,
-            'electric': createElectricDeck
+            'electric': createElectricDeck,
+            'psychic': createPsychicDeck,
+            'fighting': createFightingDeck,
+            'colorless': createColorlessDeck
         };
 
         const playerDeckCreator = deckCreators[playerDeckType] || createFireDeck;

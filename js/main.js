@@ -40,7 +40,7 @@ async function startNewGame() {
     }
 
     // Setup the game
-    const allDeckTypes = ['fire', 'water', 'grass', 'electric'];
+    const allDeckTypes = ['fire', 'water', 'grass', 'electric', 'psychic', 'fighting', 'colorless'];
     const otherDeckTypes = allDeckTypes.filter(d => d !== selectedDeck);
     const cpuDeck = otherDeckTypes[Math.floor(Math.random() * otherDeckTypes.length)];
 
