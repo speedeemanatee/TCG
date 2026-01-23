@@ -498,6 +498,10 @@ class GameUI {
 
         // If awaiting target selection
         if (this.awaitingTarget && this.pendingAction) {
+            if (zone === 'hand') {
+                this.showMessage("Select a Pokemon on the board!");
+                return;
+            }
             this.handleTargetSelection(card, zone);
             return;
         }
@@ -683,7 +687,11 @@ class GameUI {
 
         switch (action.type) {
             case 'attachEnergy':
-                this.engine.attachEnergy('player', action.card.uid, target);
+                const result = this.engine.attachEnergy('player', action.card.uid, target);
+                if (!result) {
+                    this.state.log("Failed to attach energy. Check console.");
+                    console.error("Attach Energy Failed:", { cardUid: action.card.uid, target });
+                }
                 break;
 
             case 'playTrainer':
@@ -1175,63 +1183,25 @@ class GameUI {
         const bugs = document.getElementById('feedback-bugs').value || "None";
         const enhancements = document.getElementById('feedback-enhancements').value || "None";
 
-        // Disable button while processing
+        const subject = encodeURIComponent("Pokemon TCG Feedback");
+        const body = encodeURIComponent(
+            `Game Quality: ${quality}/5\n\n` +
+            `Bugs Encountered:\n${bugs}\n\n` +
+            `Enhancement Requests:\n${enhancements}`
+        );
+
+        const mailtoLink = `mailto:markhorst@gmail.com?subject=${subject}&body=${body}`;
+
+        // Open email client
+        window.location.href = mailtoLink;
+
+        this.showMessage("Thank you! Opening your email client...");
         this.elements.submitFeedbackBtn.disabled = true;
-        this.elements.submitFeedbackBtn.textContent = 'Saving...';
 
-        try {
-            // 1. Create feedback object
-            const newFeedback = {
-                timestamp: new Date().toISOString(),
-                quality: quality,
-                bugs: bugs.replace(/"/g, '""'), // Escape quotes for CSV
-                enhancements: enhancements.replace(/"/g, '""') // Escape quotes for CSV
-            };
-
-            // 2. Save to localStorage
-            const existingData = JSON.parse(localStorage.getItem('pokemon-tcg-feedback') || '[]');
-            existingData.push(newFeedback);
-            localStorage.setItem('pokemon-tcg-feedback', JSON.stringify(existingData));
-
-            // 3. Generate CSV
-            // Headers
-            let csvContent = "Timestamp,Quality,Bugs,Enhancements\n";
-
-            // Rows
-            existingData.forEach(row => {
-                const bugText = `"${row.bugs}"`;
-                const enhanceText = `"${row.enhancements}"`;
-                csvContent += `${row.timestamp},${row.quality},${bugText},${enhanceText}\n`;
-            });
-
-            // 4. Trigger Download
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", "pokemon_tcg_feedback.csv");
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // 5. Show success
-            this.showMessage("Feedback saved! Downloading CSV...");
-            this.elements.feedbackForm.innerHTML = `
-                <div class="success-message">
-                    <p>✅ Feedback saved successfully!</p>
-                    <p style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--text-secondary);">
-                        A CSV file has been downloaded with your feedback.
-                    </p>
-                </div>
-            `;
-
-        } catch (error) {
-            console.error("Feedback error:", error);
-            this.showMessage("Error saving feedback.");
+        // Reset after a delay so they can send again if needed
+        setTimeout(() => {
             this.elements.submitFeedbackBtn.disabled = false;
-            this.elements.submitFeedbackBtn.textContent = 'Send Feedback';
-        }
+        }, 3000);
     }
 
     startNewGame() {

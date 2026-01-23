@@ -262,17 +262,29 @@ class GameEngine {
 
     // Attach energy to a Pokemon
     attachEnergy(who, energyCardUid, targetPokemon) {
+        if (!targetPokemon || typeof targetPokemon.attachEnergy !== 'function') {
+            console.error("Attach Energy Failed: Invalid target (not an ActivePokemon instance)", targetPokemon);
+            return false;
+        }
+
         const player = this.state.getPlayerState(who);
 
         if (this.state.actions.hasAttachedEnergy) {
             this.state.log('Already attached energy this turn!');
+            console.warn("Attach Energy Failed: Already attached");
+            return false;
+        }
+
+        if (!energyCardUid) {
+            console.error("Attach Energy Failed: Invalid energyCardUid", energyCardUid);
             return false;
         }
 
         // Find energy in hand
         const energyIndex = player.hand.findIndex(c => c.uid === energyCardUid);
         if (energyIndex === -1) {
-            this.state.log('Energy card not found!');
+            this.state.log('Energy card not found in hand!');
+            console.error("Attach Energy Failed: Card not in hand", { energyCardUid, hand: player.hand.map(c => c.uid) });
             return false;
         }
 
