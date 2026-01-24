@@ -38,7 +38,8 @@ class GameEngine {
             'electric': createElectricDeck,
             'psychic': createPsychicDeck,
             'fighting': createFightingDeck,
-            'colorless': createColorlessDeck
+            'colorless': createColorlessDeck,
+            'dark': createDarkDeck
         };
 
         const playerDeckCreator = deckCreators[playerDeckType] || createFireDeck;
@@ -407,9 +408,22 @@ class GameEngine {
         if (card.cardType !== CardType.TRAINER) return false;
 
         // Check supporter limit
-        if (card.trainerType === TrainerType.SUPPORTER && this.state.actions.hasPlayedSupporter) {
-            this.state.log('Already played a Supporter this turn!');
-            return false;
+        if (card.trainerType === TrainerType.SUPPORTER) {
+            if (this.state.actions.hasPlayedSupporter) {
+                this.state.log('Already played a Supporter this turn!');
+                return false;
+            }
+
+            // Cannot play Supporter on the very first turn of the game
+            // If player is handling checks: turnNumber 1 means player went first
+            // If CPU is handling checks: turnNumber 1 AND player.isFirstTurn means CPU went first
+            const isGameFirstTurn = (who === 'player' && this.state.turnNumber === 1) ||
+                (who === 'cpu' && this.state.turnNumber === 1 && this.state.player.isFirstTurn);
+
+            if (isGameFirstTurn) {
+                this.state.log("Cannot play a Supporter card on the very first turn!");
+                return false;
+            }
         }
 
         // Execute effect
@@ -641,6 +655,13 @@ class GameEngine {
                 }
                 break;
 
+            case 'coinFlipAsleep':
+                if (this.flipCoin() && opponent.active) {
+                    opponent.active.applyStatus(StatusCondition.ASLEEP);
+                    this.state.log(`${opponent.active.card.name} is Asleep!`);
+                }
+                break;
+
             case 'coinFlipParalyze':
                 if (this.flipCoin() && opponent.active) {
                     opponent.active.applyStatus(StatusCondition.PARALYZED);
@@ -705,18 +726,23 @@ class GameEngine {
         this.state.log(`${losingPlayer.active.card.name} was knocked out!`);
 
         const winner = this.state.getPlayerState(winningPlayerWho);
+        const knockedPokemon = losingPlayer.active;
 
         // Move knocked out Pokemon to discard
-        losingPlayer.discardPile.push(losingPlayer.active.card);
-        losingPlayer.discardPile.push(...losingPlayer.active.attachedEnergy);
-        losingPlayer.discardPile.push(...losingPlayer.active.previousStages);
+        losingPlayer.discardPile.push(knockedPokemon.card);
+        losingPlayer.discardPile.push(...knockedPokemon.attachedEnergy);
+        losingPlayer.discardPile.push(...knockedPokemon.previousStages);
         losingPlayer.active = null;
 
-        // Winner takes a prize
-        if (winner.prizeCards.length > 0) {
-            const prize = winner.prizeCards.pop();
-            winner.hand.push(prize);
-            this.state.log(`${winningPlayerWho === 'player' ? 'You' : 'CPU'} took a prize card!`);
+        // Winner takes prizes
+        const prizeCount = knockedPokemon.card.prizeCount || 1;
+
+        for (let i = 0; i < prizeCount; i++) {
+            if (winner.prizeCards.length > 0) {
+                const prize = winner.prizeCards.pop();
+                winner.hand.push(prize);
+                this.state.log(`${winningPlayerWho === 'player' ? 'You' : 'CPU'} took a prize card!`);
+            }
         }
 
         // Check win condition

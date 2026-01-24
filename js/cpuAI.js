@@ -282,9 +282,11 @@ class CPUAI {
 
         for (const trainer of trainers) {
             // Skip supporter if already played one
-            if (trainer.trainerType === TrainerType.SUPPORTER &&
-                this.state.actions.hasPlayedSupporter) {
-                continue;
+            if (trainer.trainerType === TrainerType.SUPPORTER) {
+                if (this.state.actions.hasPlayedSupporter) continue;
+
+                // Skip if first turn rule applies (CPU went first)
+                if (this.state.turnNumber === 1 && this.state.player.isFirstTurn) continue;
             }
 
             const shouldPlay = this.evaluateTrainer(trainer);

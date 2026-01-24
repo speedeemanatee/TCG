@@ -15,7 +15,9 @@ const PokemonType = {
     ELECTRIC: 'electric',
     PSYCHIC: 'psychic',
     FIGHTING: 'fighting',
-    COLORLESS: 'colorless'
+    FIGHTING: 'fighting',
+    COLORLESS: 'colorless',
+    DARK: 'dark'
 };
 
 // Trainer Subtypes
@@ -2049,3 +2051,144 @@ window.createElectricDeck = createElectricDeck;
 window.createPsychicDeck = createPsychicDeck;
 window.createFightingDeck = createFightingDeck;
 window.createColorlessDeck = createColorlessDeck;
+
+// ============================================
+// DARK TYPE POKEMON
+// ============================================
+
+const Zorua = {
+    id: 'zorua',
+    name: 'Zorua',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.DARK,
+    stage: Stage.BASIC,
+    hp: 60,
+    evolvesFrom: null,
+    image: 'assets/pokemon/zorua.png',
+    placeholderIcon: '🦊',
+    weakness: PokemonType.GRASS,
+    resistance: null,
+    retreatCost: 1,
+    attacks: [
+        {
+            name: 'Ram',
+            cost: [PokemonType.COLORLESS],
+            damage: 10,
+            effect: null,
+            description: 'A basic ram attack.'
+        },
+        {
+            name: 'Nasty Plot',
+            cost: [PokemonType.DARK],
+            damage: 0,
+            effect: 'searchPokemon',
+            description: 'Search your deck for a Pokemon card.'
+        }
+    ]
+};
+
+const Zoroark = {
+    id: 'zoroark',
+    name: 'Zoroark',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.DARK,
+    stage: Stage.STAGE1,
+    hp: 110,
+    evolvesFrom: 'zorua',
+    image: 'assets/pokemon/zoroark.png',
+    placeholderIcon: '🦊',
+    weakness: PokemonType.GRASS,
+    resistance: null,
+    retreatCost: 2,
+    attacks: [
+        {
+            name: 'Night Slash',
+            cost: [PokemonType.DARK, PokemonType.COLORLESS],
+            damage: 30,
+            effect: 'switch',
+            description: 'Switch this Pokemon with 1 of your Benched Pokemon.'
+        },
+        {
+            name: 'Dark Rush',
+            cost: [PokemonType.DARK, PokemonType.DARK, PokemonType.COLORLESS],
+            damage: 80,
+            effect: null,
+            description: 'Inflicts massive damage.'
+        }
+    ]
+};
+
+const DarkraiV = {
+    id: 'darkrai_v',
+    name: 'Darkrai V',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.DARK,
+    stage: Stage.BASIC,
+    hp: 210,
+    evolvesFrom: null,
+    image: 'assets/pokemon/darkrai_v.png',
+    placeholderIcon: '🌑',
+    weakness: PokemonType.FIGHTING,
+    resistance: null,
+    retreatCost: 2,
+    prizeCount: 2,
+    isV: true,
+    attacks: [
+        {
+            name: 'Dark Void',
+            cost: [PokemonType.DARK, PokemonType.COLORLESS],
+            damage: 30,
+            effect: 'coinFlipAsleep',
+            bonusEffect: StatusCondition.ASLEEP,
+            description: 'Your opponent\'s Active Pokemon is now Asleep.'
+        },
+        {
+            name: 'Dark Pulse',
+            cost: [PokemonType.DARK, PokemonType.DARK, PokemonType.COLORLESS],
+            damage: 60,
+            effect: 'coinFlipBonus',
+            bonusDamage: 60,
+            description: 'Deals 60 damage plus 60 more if you get a heads.'
+        }
+    ]
+};
+
+// ============================================
+// DARK TYPE ENERGY
+// ============================================
+
+const DarkEnergy = {
+    id: 'dark_energy',
+    name: 'Dark Energy',
+    cardType: CardType.ENERGY,
+    energyType: PokemonType.DARK,
+    image: 'assets/pokemon/dark_energy.png'
+};
+
+function createDarkDeck() {
+    const deck = [];
+
+    // Pokemon (16)
+    for (let i = 0; i < 4; i++) deck.push({ ...Zorua, uid: `zorua-${i}` });
+    for (let i = 0; i < 3; i++) deck.push({ ...Zoroark, uid: `zoroark-${i}` });
+    for (let i = 0; i < 3; i++) deck.push({ ...DarkraiV, uid: `darkrai-v-${i}` });
+    for (let i = 0; i < 2; i++) deck.push({ ...Snorlax, uid: `snorlax-dark-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...Rattata, uid: `rattata-dark-${i}` });
+
+    // Energy (16)
+    for (let i = 0; i < 16; i++) deck.push({ ...DarkEnergy, uid: `dark-energy-${i}` });
+
+    // Trainers (28)
+    for (let i = 0; i < 4; i++) deck.push({ ...Potion, uid: `potion-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...ProfessorsResearch, uid: `professors-research-dark-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...Switch, uid: `switch-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...PokeBall, uid: `poke-ball-${i}` });
+    for (let i = 0; i < 2; i++) deck.push({ ...EnergyRetrieval, uid: `energy-retrieval-${i}` });
+    for (let i = 0; i < 2; i++) deck.push({ ...SuperPotion, uid: `super-potion-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...Marnie, uid: `marnie-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...BossOrders, uid: `boss-orders-${i}` });
+
+    return deck;
+}
+
+window.createDarkDeck = createDarkDeck;
