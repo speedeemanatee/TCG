@@ -2287,6 +2287,7 @@ input:checked+.slider:before {
     margin-bottom: 1rem !important;
     margin-top: 0 !important;
 }
+
 /* Balance Deck Layout (4+3) */
 .deck-preview {
     max-width: 950px !important;
@@ -2294,8 +2295,8 @@ input:checked+.slider:before {
 }
 
 /* Colorless Placeholder Style */
-.deck-art-placeholder.colorless { 
-    background: linear-gradient(180deg, #9ca3af, var(--bg-tertiary)); 
+.deck-art-placeholder.colorless {
+    background: linear-gradient(180deg, #9ca3af, var(--bg-tertiary));
 }
 
 
@@ -2310,7 +2311,8 @@ input:checked+.slider:before {
     }
 
     .title-poke {
-        font-size: 3.5rem; /* Smaller title */
+        font-size: 3.5rem;
+        /* Smaller title */
         -webkit-text-stroke: 1.5px #2a4480;
     }
 
@@ -2323,7 +2325,8 @@ input:checked+.slider:before {
     .title-container {
         margin-bottom: 0.5rem !important;
         padding: 0.5rem !important;
-        background: none; /* Reduce visual noise */
+        background: none;
+        /* Reduce visual noise */
     }
 
     .deck-selection-header {
@@ -2344,13 +2347,14 @@ input:checked+.slider:before {
     }
 
     .deck-art-container {
-        height: 100px; /* Compact art */
+        height: 100px;
+        /* Compact art */
     }
 
     .deck-info {
         padding: 0.75rem;
     }
-    
+
     .deck-choice {
         min-width: 160px;
     }
@@ -2399,22 +2403,26 @@ input:checked+.slider:before {
 }
 
 .rookie-guide-panel.collapsed {
-    width: 60px; /* Shrink width */
+    width: 60px;
+    /* Shrink width */
     padding: 1rem 0.5rem;
 }
 
 .rookie-guide-panel.collapsed h3 {
-    font-size: 0; /* Hide title text */
+    font-size: 0;
+    /* Hide title text */
 }
 
 .rookie-guide-panel.collapsed h3 .guide-collapse-btn {
-    font-size: 1rem; /* Keep button visible */
+    font-size: 1rem;
+    /* Keep button visible */
     margin: 0 auto;
     display: block;
 }
 
 .rookie-guide-panel.collapsed .guide-item span {
-    display: none; /* Hide item text */
+    display: none;
+    /* Hide item text */
 }
 
 .rookie-guide-panel.collapsed .guide-item {
@@ -2428,3 +2436,25 @@ input:checked+.slider:before {
     height: 16px;
 }
 
+
+/* ============================================
+   THEMES
+   ============================================ */
+[data-theme="light"] {
+    /* Colors */
+    --bg-primary: #f8fafc;
+    --bg-secondary: #e2e8f0;
+    --bg-tertiary: #cbd5e1;
+    --bg-card: #ffffff;
+
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+
+    --card-bg: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+    --card-border: #cbd5e1;
+    --card-hover: #e2e8f0;
+
+    /* Adjust accent glow to be visible on light */
+    --accent-glow: rgba(99, 102, 241, 0.4);
+}

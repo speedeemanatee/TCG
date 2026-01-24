@@ -167,6 +167,19 @@ class GameUI {
             this.elements.guideSwitch.checked = this.guideEnabled;
             this.toggleGuidePanel();
         }
+        if (this.elements.ttsSwitch) {
+            this.elements.ttsSwitch.checked = this.ttsEnabled;
+        }
+
+        // Initialize Theme Toggle
+        this.elements.themeSwitch = document.getElementById('theme-switch');
+        if (this.elements.themeSwitch) {
+            this.elements.themeSwitch.checked = document.body.getAttribute('data-theme') === 'light';
+            this.elements.themeSwitch.addEventListener('change', (e) => {
+                const theme = e.target.checked ? 'light' : 'dark';
+                document.body.setAttribute('data-theme', theme);
+            });
+        }
     }
 
     // ============================================

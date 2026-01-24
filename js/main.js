@@ -27,8 +27,76 @@ function initGame() {
     gameUI = new GameUI(gameState, gameEngine, cpuAI);
     window.gameUI = gameUI;
 
+    // Setup Settings (Title Screen)
+    setupSettings();
+
     console.log('✅ Game objects created');
 }
+
+function setupSettings() {
+    const settingsBtn = document.getElementById('settings-btn');
+    const template = document.getElementById('settings-template');
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalContent = document.getElementById('modal-content');
+    const modalClose = document.getElementById('modal-close');
+
+    if (!settingsBtn || !template || !modal) return;
+
+    // Separate close handler to avoid duplicates if called multiple times
+    // (though setupSettings is only called once per page load usually)
+    const closeModal = () => modal.classList.remove('active');
+
+    // Ensure we don't duplicate listeners if initGame is called multiple times (it shouldn't be, but good practice)
+    modalClose.onclick = closeModal;
+
+    // We only want to close on outside click if it's the title screen
+    // The UI class handles this for the game, but we need it for title screen
+    window.onclick = (e) => {
+        if (e.target === modal) closeModal();
+    };
+
+    settingsBtn.addEventListener('click', () => {
+        // Populate modal from template
+        modalTitle.textContent = "Settings";
+        modalContent.innerHTML = '';
+        modalContent.appendChild(template.content.cloneNode(true));
+
+        // Get switches
+        const themeSwitch = modalContent.querySelector('#setting-theme');
+        const guideSwitch = modalContent.querySelector('#setting-guide');
+        const ttsSwitch = modalContent.querySelector('#setting-tts');
+
+        // Set current values
+        themeSwitch.checked = document.body.getAttribute('data-theme') === 'light';
+        if (window.gameUI) {
+            guideSwitch.checked = window.gameUI.guideEnabled;
+            ttsSwitch.checked = window.gameUI.ttsEnabled;
+        }
+
+        // Bind events
+        themeSwitch.addEventListener('change', (e) => {
+            const theme = e.target.checked ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', theme);
+        });
+
+        guideSwitch.addEventListener('change', (e) => {
+            if (window.gameUI) {
+                window.gameUI.guideEnabled = e.target.checked;
+            }
+        });
+
+        ttsSwitch.addEventListener('change', (e) => {
+            if (window.gameUI) {
+                window.gameUI.ttsEnabled = e.target.checked;
+            }
+        });
+
+        // Show modal
+        modal.classList.add('active');
+    });
+}
+
 
 // Start a new game
 async function startNewGame() {
