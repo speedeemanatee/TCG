@@ -16,11 +16,18 @@
     <!-- Start Screen -->
     <div id="start-screen" class="screen active">
         <div class="start-content">
-            <h1 class="game-title">
-                <span class="title-poke">Pokémon</span>
-                <span class="title-tcg">TCG</span>
-            </h1>
-            <p class="subtitle">Battle Arena</p>
+            <div class="title-container">
+                <h1 class="game-title">
+                    <span class="title-poke" data-text="Pokémon">Pokémon</span>
+                    <span class="title-sub">Trading Card Game</span>
+                </h1>
+                <p class="subtitle">Battle Arena</p>
+            </div>
+
+            <div class="deck-selection-header">
+                <h2>Choose Your Deck</h2>
+                <p>Select a type to begin your adventure</p>
+            </div>
             <div class="deck-preview">
                 <div class="deck-choice selectable selected" data-deck="fire">
                     <div class="deck-art-container">
@@ -148,7 +155,9 @@
                         <span class="tts-label">Voice</span>
                     </div>
                 </div>
-                <span id="phase-info">MAIN</span>
+                <button id="new-game-header-btn" class="header-btn" title="Start New Game">
+                    <span>New Game</span>
+                </button>
             </div>
         </header>
 

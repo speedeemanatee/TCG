@@ -18,7 +18,7 @@ class GameUI {
         this.currentUtterance = null;
 
         // Guide State
-        this.guideEnabled = false;
+        this.guideEnabled = true;
 
         // DOM element cache
         this.elements = {};
@@ -65,7 +65,7 @@ class GameUI {
             // Info displays
             gameLog: document.getElementById('game-log'),
             turnInfo: document.getElementById('turn-info'),
-            phaseInfo: document.getElementById('phase-info'),
+            newGameHeaderBtn: document.getElementById('new-game-header-btn'),
 
             // Modals
             modal: document.getElementById('modal'),
@@ -107,8 +107,15 @@ class GameUI {
         // Modal close
         this.elements.modalClose?.addEventListener('click', () => this.hideModal());
 
-        // New game
+        // New game (Modal)
         this.elements.newGameBtn?.addEventListener('click', () => this.startNewGame());
+
+        // New game (Header)
+        this.elements.newGameHeaderBtn?.addEventListener('click', () => {
+            if (confirm('Are you sure you want to restart the game?')) {
+                this.startNewGame();
+            }
+        });
 
         // Close modal on outside click
         this.elements.modal?.addEventListener('click', (e) => {
@@ -132,6 +139,12 @@ class GameUI {
             this.guideEnabled = e.target.checked;
             this.toggleGuidePanel();
         });
+
+        // Initialize state
+        if (this.elements.guideSwitch) {
+            this.elements.guideSwitch.checked = this.guideEnabled;
+            this.toggleGuidePanel();
+        }
     }
 
     // ============================================
@@ -340,12 +353,28 @@ class GameUI {
     }
 
     renderTurnInfo() {
+        const isPlayerTurn = this.state.currentTurn === 'player';
+
         if (this.elements.turnInfo) {
-            this.elements.turnInfo.textContent = `Turn ${this.state.turnNumber} - ${this.state.currentTurn === 'player' ? 'Your Turn' : "CPU's Turn"}`;
+            this.elements.turnInfo.textContent = `Turn ${this.state.turnNumber} - ${isPlayerTurn ? 'Your Turn' : "CPU's Turn"}`;
+            this.elements.turnInfo.style.color = isPlayerTurn ? 'var(--success)' : 'var(--danger)';
         }
 
-        if (this.elements.phaseInfo) {
-            this.elements.phaseInfo.textContent = this.state.phase.toUpperCase();
+        // Visual Turn Indicator
+        if (this.elements.playerActive && this.elements.cpuActive) {
+            // Apply to the parent section (.player-side or .cpu-side)
+            const playerSide = this.elements.playerActive.closest('.player-side');
+            const cpuSide = this.elements.cpuActive.closest('.cpu-side');
+
+            if (playerSide && cpuSide) {
+                if (isPlayerTurn) {
+                    playerSide.classList.add('active-turn');
+                    cpuSide.classList.remove('active-turn');
+                } else {
+                    playerSide.classList.remove('active-turn');
+                    cpuSide.classList.add('active-turn');
+                }
+            }
         }
     }
 

@@ -394,6 +394,28 @@ h3 {
     flex-direction: column-reverse;
 }
 
+.cpu-side.active-turn,
+.player-side.active-turn {
+    box-shadow: inset 0 0 30px rgba(99, 102, 241, 0.2);
+    border-radius: 12px;
+    border: 1px solid var(--accent-glow);
+    animation: activeTurnPulse 3s infinite ease-in-out;
+}
+
+@keyframes activeTurnPulse {
+
+    0%,
+    100% {
+        box-shadow: inset 0 0 30px rgba(99, 102, 241, 0.2);
+        border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    50% {
+        box-shadow: inset 0 0 50px rgba(99, 102, 241, 0.4);
+        border-color: var(--accent-primary);
+    }
+}
+
 .side-info {
     display: flex;
     align-items: center;
@@ -2131,3 +2153,148 @@ input:checked+.slider:before {
     flex-direction: column;
     justify-content: center;
 }
+
+/* Ultra Polish Title Screen */
+.title-container {
+    margin-bottom: 2rem;
+    position: relative;
+    display: inline-block;
+    padding: 2rem;
+    /* Optional glow behind title */
+    background: radial-gradient(circle at center, rgba(60, 90, 166, 0.2) 0%, transparent 70%);
+}
+
+.game-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+    margin-bottom: 0;
+}
+
+.title-poke {
+    font-size: 5rem;
+    /* Responsive sizing might be needed */
+    font-weight: 800;
+    color: #ffcb05;
+    /* Official Yellow */
+    text-transform: uppercase;
+    letter-spacing: 4px;
+
+    /* Strong Blue Outline */
+    -webkit-text-stroke: 2px #2a4480;
+    text-shadow:
+        4px 4px 0 #2a4480,
+        6px 6px 0 #1a2c55,
+        0 0 20px rgba(255, 203, 5, 0.5);
+    /* Yellow Glow */
+
+    /* Reset previous gradient text */
+    background: none;
+    -webkit-background-clip: border-box;
+    -webkit-text-fill-color: #ffcb05;
+
+    position: relative;
+    z-index: 2;
+    animation: titlePulse 3s ease-in-out infinite;
+}
+
+.title-sub {
+    font-size: 1.2rem;
+    color: #fff;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    font-weight: 400;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    position: relative;
+    z-index: 2;
+}
+
+.subtitle {
+    font-size: 0.9rem;
+    color: var(--accent-secondary);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-top: 0.5rem;
+    font-weight: 600;
+}
+
+.deck-selection-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 0.5s forwards;
+}
+
+.deck-selection-header h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.25rem;
+    color: white;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.deck-selection-header p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+@keyframes titlePulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 10px rgba(255, 203, 5, 0.3));
+    }
+
+    50% {
+        transform: scale(1.02);
+        filter: drop-shadow(0 0 20px rgba(255, 203, 5, 0.6));
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Adjust deck preview margin since we added header */
+.deck-preview {
+    margin-top: 1rem;
+}
+
+
+/* Tighten up title screen spacing */
+.title-container {
+    margin-bottom: 1rem !important;
+    /* Reduced from 2rem */
+    padding-bottom: 0 !important;
+}
+
+.subtitle {
+    margin-bottom: 0.5rem !important;
+    /* Reduced from larger margin */
+}
+
+.deck-selection-header {
+    margin-bottom: 1rem !important;
+    margin-top: 0 !important;
+}
+/* Balance Deck Layout (4+3) */
+.deck-preview {
+    max-width: 950px !important;
+    justify-content: center !important;
+}
+
+/* Colorless Placeholder Style */
+.deck-art-placeholder.colorless { 
+    background: linear-gradient(180deg, #9ca3af, var(--bg-tertiary)); 
+}
+
