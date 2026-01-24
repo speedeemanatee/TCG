@@ -179,6 +179,7 @@ class GameEngine {
             this.state.phase = 'draw';
             const card = this.drawCard(who);
             if (!card) return false; // Game over - can't draw
+            this.state.actions.hasDrawn = true;
         }
 
         this.state.phase = 'main';
