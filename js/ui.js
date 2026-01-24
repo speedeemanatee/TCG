@@ -19,6 +19,7 @@ class GameUI {
 
         // Guide State
         this.guideEnabled = true;
+        this.guideCollapsed = false;
 
         // DOM element cache
         this.elements = {};
@@ -139,6 +140,27 @@ class GameUI {
             this.guideEnabled = e.target.checked;
             this.toggleGuidePanel();
         });
+
+        // Guide Collapse Toggle
+        const guidePanel = document.getElementById('rookie-guide');
+        if (guidePanel) {
+            const header = guidePanel.querySelector('h3');
+            if (header) {
+                // Create toggle button
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'guide-collapse-btn';
+                toggleBtn.innerHTML = '▼';
+                toggleBtn.title = 'Collapse Guide';
+                header.appendChild(toggleBtn);
+
+                // Toggle click
+                header.addEventListener('click', () => {
+                    this.guideCollapsed = !this.guideCollapsed;
+                    guidePanel.classList.toggle('collapsed', this.guideCollapsed);
+                    toggleBtn.style.transform = this.guideCollapsed ? 'rotate(-90deg)' : 'rotate(0)';
+                });
+            }
+        }
 
         // Initialize state
         if (this.elements.guideSwitch) {
@@ -512,10 +534,19 @@ class GameUI {
                 `;
 
             case CardType.ENERGY:
+                const energyArtwork = card.image
+                    ? `<img src="${card.image}" alt="${card.name}" class="card-artwork-img">`
+                    : `<div class="energy-symbol ${card.energyType}"></div>`;
+
                 return `
                     <div class="energy-card">
-                        <div class="energy-symbol ${card.energyType}"></div>
-                        <div class="energy-name">${card.name}</div>
+                        <div class="card-header-simple">
+                            <span class="card-name">${card.name}</span>
+                        </div>
+                        <div class="card-artwork energy-artwork">
+                            ${energyArtwork}
+                        </div>
+                        <div class="energy-type-icon ${card.energyType}"></div>
                     </div>
                 `;
 

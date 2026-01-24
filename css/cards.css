@@ -19,50 +19,49 @@
   --type-fire-dark: #9C531F;
   --type-fire-light: #FFCB6B;
   --type-fire-gradient: linear-gradient(135deg, #FF6B35 0%, #F7931A 50%, #FFD700 100%);
-  
+
   --type-water: #6890F0;
   --type-water-dark: #445E9C;
   --type-water-light: #9DB7F5;
   --type-water-gradient: linear-gradient(135deg, #0077BE 0%, #00A8E8 50%, #89CFF0 100%);
-  
+
   --type-grass: #78C850;
   --type-grass-dark: #4E8234;
   --type-grass-light: #A7DB8D;
-  
+
   --type-electric: #F8D030;
   --type-psychic: #F85888;
   --type-fighting: #C03028;
   --type-colorless: #A8A878;
-  
+
   /* Card Frame Colors */
   --card-border-gold: linear-gradient(135deg, #B8860B, #FFD700, #DAA520, #FFD700, #B8860B);
   --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
-  --card-inner-shadow: inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.2);
-  
+  --card-inner-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+
   /* Card Dimensions */
   --card-width: 250px;
   --card-height: 350px;
   --card-radius: 12px;
-  
+
   /* Holographic Effect */
-  --holo-gradient: linear-gradient(
-    125deg,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,0.1) 25%,
-    rgba(255,255,255,0.3) 50%,
-    rgba(255,255,255,0.1) 75%,
-    rgba(255,255,255,0) 100%
-  );
+  --holo-gradient: linear-gradient(125deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 25%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0.1) 75%,
+      rgba(255, 255, 255, 0) 100%);
 }
 
 /* -----------------------------------------------------------------------------
    BASE CARD STRUCTURE
 ----------------------------------------------------------------------------- */
 .pokemon-card {
-  --card-image: none; /* Override this to add artwork */
+  --card-image: none;
+  /* Override this to add artwork */
   --type-color: var(--type-colorless);
   --type-gradient: linear-gradient(135deg, #888 0%, #aaa 50%, #ccc 100%);
-  
+
   position: relative;
   width: var(--card-width);
   height: var(--card-height);
@@ -102,8 +101,15 @@
 }
 
 @keyframes holoShine {
-  0%, 100% { background-position: -200% center; }
-  50% { background-position: 200% center; }
+
+  0%,
+  100% {
+    background-position: -200% center;
+  }
+
+  50% {
+    background-position: 200% center;
+  }
 }
 
 /* Card inner frame */
@@ -113,9 +119,9 @@
   left: 6px;
   right: 6px;
   bottom: 6px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.1) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(0, 0, 0, 0.1) 100%);
   border-radius: 8px;
-  border: 2px solid rgba(255,255,255,0.2);
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 /* -----------------------------------------------------------------------------
@@ -165,8 +171,8 @@
   font-size: 9px;
   font-weight: 600;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.9);
-  background: rgba(0,0,0,0.4);
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.4);
   padding: 2px 8px;
   border-radius: 10px;
   letter-spacing: 0.5px;
@@ -176,7 +182,7 @@
   font-size: 18px;
   font-weight: 700;
   color: #fff;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   margin-top: 16px;
 }
 
@@ -191,13 +197,13 @@
   font-size: 22px;
   font-weight: 800;
   color: #fff;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .hp-label {
   font-size: 10px;
   font-weight: 600;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .type-icon {
@@ -208,8 +214,8 @@
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  background: rgba(0,0,0,0.3);
-  border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   margin-left: 8px;
 }
 
@@ -224,13 +230,13 @@
   margin: 8px 16px;
   border-radius: 8px;
   overflow: hidden;
-  background: 
+  background:
     var(--card-image),
-    linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.2) 100%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%);
   background-size: cover;
   background-position: center;
-  border: 3px solid rgba(255,255,255,0.3);
-  box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 /* Placeholder content when no image */
@@ -244,11 +250,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.1) 0%,
-    rgba(0,0,0,0.3) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(0, 0, 0, 0.3) 100%);
 }
 
 .card-artwork .placeholder-icon {
@@ -259,7 +263,7 @@
 
 .card-artwork .placeholder-text {
   font-size: 11px;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -281,13 +285,13 @@
   align-items: center;
   padding: 8px;
   margin-bottom: 4px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 6px;
   transition: background 0.2s ease;
 }
 
 .attack:hover {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .attack-cost {
@@ -306,17 +310,37 @@
   font-size: 10px;
   font-weight: bold;
   color: #fff;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.3);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.energy-icon.fire { background: var(--type-fire); }
-.energy-icon.water { background: var(--type-water); }
-.energy-icon.grass { background: var(--type-grass); }
-.energy-icon.electric { background: var(--type-electric); }
-.energy-icon.psychic { background: var(--type-psychic); }
-.energy-icon.fighting { background: var(--type-fighting); }
-.energy-icon.colorless { background: var(--type-colorless); }
+.energy-icon.fire {
+  background: var(--type-fire);
+}
+
+.energy-icon.water {
+  background: var(--type-water);
+}
+
+.energy-icon.grass {
+  background: var(--type-grass);
+}
+
+.energy-icon.electric {
+  background: var(--type-electric);
+}
+
+.energy-icon.psychic {
+  background: var(--type-psychic);
+}
+
+.energy-icon.fighting {
+  background: var(--type-fighting);
+}
+
+.energy-icon.colorless {
+  background: var(--type-colorless);
+}
 
 .attack-info {
   flex: 1;
@@ -326,12 +350,12 @@
   font-size: 13px;
   font-weight: 600;
   color: #fff;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .attack-effect {
   font-size: 9px;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   margin-top: 2px;
 }
 
@@ -339,7 +363,7 @@
   font-size: 20px;
   font-weight: 800;
   color: #fff;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   min-width: 35px;
   text-align: right;
 }
@@ -352,8 +376,8 @@
   justify-content: space-between;
   padding: 6px 12px 10px;
   font-size: 9px;
-  color: rgba(255,255,255,0.8);
-  border-top: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin: 0 12px;
 }
 
@@ -392,35 +416,71 @@
    ENERGY CARDS
 ----------------------------------------------------------------------------- */
 .pokemon-card.energy-card {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
+  /* Changed from flex to standard block layout */
 }
 
-.pokemon-card.energy-card .energy-symbol {
-  width: 120px;
-  height: 120px;
+.energy-card .card-header-simple {
+  padding: 12px 16px 8px;
+  text-align: center;
+}
+
+.energy-card .card-name {
+  font-size: 20px;
+  margin-top: 5px;
+  display: block;
+}
+
+.energy-card .card-artwork.energy-artwork {
+  height: 220px;
+  /* Larger artwork area for energy */
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 60px;
-  background: rgba(0,0,0,0.2);
-  border: 4px solid rgba(255,255,255,0.3);
-  box-shadow: 
-    0 4px 20px rgba(0,0,0,0.3),
-    inset 0 2px 10px rgba(255,255,255,0.2);
+  /* Circular artwork for orbs */
+  width: 220px;
+  margin: 15px auto;
+  border: 4px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 0 20px rgba(255, 255, 255, 0.2),
+    inset 0 0 20px rgba(0, 0, 0, 0.4);
 }
 
+.energy-card .energy-type-icon {
+  width: 40px;
+  height: 40px;
+  margin: 10px auto;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.energy-card .energy-type-icon.fire {
+  background: var(--type-fire);
+}
+
+.energy-card .energy-type-icon.water {
+  background: var(--type-water);
+}
+
+.energy-card .energy-type-icon.grass {
+  background: var(--type-grass);
+}
+
+.energy-card .energy-type-icon.electric {
+  background: var(--type-electric);
+}
+
+.energy-card .energy-type-icon.psychic {
+  background: var(--type-psychic);
+}
+
+.energy-card .energy-type-icon.fighting {
+  background: var(--type-fighting);
+}
+
+/* Hide old styles */
+.pokemon-card.energy-card .energy-symbol,
 .pokemon-card.energy-card .energy-label {
-  position: absolute;
-  bottom: 20px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  display: none;
 }
 
 /* -----------------------------------------------------------------------------
@@ -441,10 +501,10 @@
 .trainer-card .card-effect {
   padding: 12px 16px;
   font-size: 11px;
-  color: rgba(255,255,255,0.9);
+  color: rgba(255, 255, 255, 0.9);
   line-height: 1.5;
   text-align: center;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
   margin: 8px 12px;
   border-radius: 6px;
 }
@@ -463,7 +523,7 @@
 }
 
 .pokemon-card.face-down {
-  background: 
+  background:
     url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="%23FFD700" stroke-width="3"/><circle cx="50" cy="50" r="30" fill="%23CC0000"/><circle cx="50" cy="50" r="15" fill="%23fff"/></svg>') center/60% no-repeat,
     linear-gradient(135deg, #1a237e 0%, #283593 50%, #1a237e 100%);
 }
@@ -534,7 +594,7 @@
   padding: 8px 16px;
   border-radius: 8px;
   border: 3px solid #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   z-index: 20;
 }
 

@@ -1666,42 +1666,48 @@ const FireEnergy = {
     id: 'fire-energy',
     name: 'Fire Energy',
     cardType: CardType.ENERGY,
-    energyType: PokemonType.FIRE
+    energyType: PokemonType.FIRE,
+    image: 'assets/pokemon/fire_energy.png'
 };
 
 const WaterEnergy = {
     id: 'water-energy',
     name: 'Water Energy',
     cardType: CardType.ENERGY,
-    energyType: PokemonType.WATER
+    energyType: PokemonType.WATER,
+    image: 'assets/pokemon/water_energy.png'
 };
 
 const GrassEnergy = {
     id: 'grass-energy',
     name: 'Grass Energy',
     cardType: CardType.ENERGY,
-    energyType: PokemonType.GRASS
+    energyType: PokemonType.GRASS,
+    image: 'assets/pokemon/grass_energy.png'
 };
 
 const ElectricEnergy = {
     id: 'electric-energy',
     name: 'Electric Energy',
     cardType: CardType.ENERGY,
-    energyType: PokemonType.ELECTRIC
+    energyType: PokemonType.ELECTRIC,
+    image: 'assets/pokemon/electric_energy.png'
 };
 
 const PsychicEnergy = {
     id: 'psychic-energy',
     name: 'Psychic Energy',
     cardType: CardType.ENERGY,
-    energyType: PokemonType.PSYCHIC
+    energyType: PokemonType.PSYCHIC,
+    image: 'assets/pokemon/psychic_energy.png'
 };
 
 const FightingEnergy = {
     id: 'fighting-energy',
     name: 'Fighting Energy',
     cardType: CardType.ENERGY,
-    energyType: PokemonType.FIGHTING
+    energyType: PokemonType.FIGHTING,
+    image: 'assets/pokemon/fighting_energy.png'
 };
 
 // ============================================

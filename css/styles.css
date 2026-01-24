@@ -2371,3 +2371,60 @@ input:checked+.slider:before {
     }
 }
 
+
+/* ============================================
+   COLLAPSIBLE GUIDE STYLES
+   ============================================ */
+.rookie-guide-panel {
+    transition: width 0.3s ease, padding 0.3s ease;
+}
+
+.rookie-guide-panel h3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.guide-collapse-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 4px;
+    margin-left: 8px;
+    transition: transform 0.3s ease;
+}
+
+.rookie-guide-panel.collapsed {
+    width: 60px; /* Shrink width */
+    padding: 1rem 0.5rem;
+}
+
+.rookie-guide-panel.collapsed h3 {
+    font-size: 0; /* Hide title text */
+}
+
+.rookie-guide-panel.collapsed h3 .guide-collapse-btn {
+    font-size: 1rem; /* Keep button visible */
+    margin: 0 auto;
+    display: block;
+}
+
+.rookie-guide-panel.collapsed .guide-item span {
+    display: none; /* Hide item text */
+}
+
+.rookie-guide-panel.collapsed .guide-item {
+    justify-content: center;
+    padding: 4px 0;
+}
+
+.rookie-guide-panel.collapsed .guide-checkbox {
+    margin-right: 0;
+    width: 16px;
+    height: 16px;
+}
+
