@@ -1897,3 +1897,24 @@ input:checked+.slider:before {
     max-height: 40px;
 }
 
+
+/* Update Attack Mini for Cost Visibility */
+.attack-mini {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 2px 0;
+    border-top: 1px solid var(--card-border);
+    color: var(--text-secondary);
+}
+
+.attack-cost-mini {
+    display: flex;
+    gap: 1px;
+}
+
+.attack-damage-mini {
+    font-weight: 700;
+    margin-left: auto;
+}
+

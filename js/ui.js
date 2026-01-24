@@ -421,7 +421,11 @@ class GameUI {
             <div class="attacks-mini">
                 ${card.attacks.map(a => `
                     <div class="attack-mini ${activePokemon.canUseAttack(a) ? 'usable' : 'unusable'}">
-                        ${a.name} (${a.damage})
+                        <span class="attack-cost-mini">
+                            ${a.cost.map(c => `<span class="energy-mini ${c}"></span>`).join('')}
+                        </span>
+                        <span>${a.name}</span>
+                        <span class="attack-damage-mini">${a.damage}</span>
                     </div>
                 `).join('')}
             </div>
