@@ -7,6 +7,15 @@ let cpuAI = null;
 let gameUI = null;
 let selectedDeck = 'fire'; // Default selection
 
+// Apply theme immediately to prevent flash
+function initTheme() {
+    const storedTheme = localStorage.getItem('pokemon-tcg-theme');
+    // Default to dark if not set
+    const theme = storedTheme || 'dark';
+    document.body.setAttribute('data-theme', theme);
+}
+initTheme();
+
 // Initialize the game
 function initGame() {
     console.log('🎴 Pokemon TCG - Initializing...');
@@ -68,27 +77,56 @@ function setupSettings() {
         const ttsSwitch = modalContent.querySelector('#setting-tts');
 
         // Set current values
-        themeSwitch.checked = document.body.getAttribute('data-theme') === 'light';
-        if (window.gameUI) {
-            guideSwitch.checked = window.gameUI.guideEnabled;
-            ttsSwitch.checked = window.gameUI.ttsEnabled;
-        }
+        // Theme
+        const storedTheme = localStorage.getItem('pokemon-tcg-theme');
+        themeSwitch.checked = storedTheme === 'light';
+
+        // Guide
+        const storedGuide = localStorage.getItem('pokemon-tcg-guide');
+        // Default to true if not set
+        guideSwitch.checked = storedGuide !== 'false';
+
+        // TTS
+        const storedTTS = localStorage.getItem('pokemon-tcg-tts');
+        ttsSwitch.checked = storedTTS === 'true';
 
         // Bind events
         themeSwitch.addEventListener('change', (e) => {
             const theme = e.target.checked ? 'light' : 'dark';
             document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('pokemon-tcg-theme', theme);
+
+            // Sync with in-game toggle if it exists
+            if (window.gameUI && window.gameUI.elements.themeSwitch) {
+                window.gameUI.elements.themeSwitch.checked = (theme === 'light');
+            }
         });
 
         guideSwitch.addEventListener('change', (e) => {
+            const enabled = e.target.checked;
+            localStorage.setItem('pokemon-tcg-guide', enabled);
+
             if (window.gameUI) {
-                window.gameUI.guideEnabled = e.target.checked;
+                window.gameUI.guideEnabled = enabled;
+                window.gameUI.toggleGuidePanel();
+                // Sync UI switch if visible
+                if (window.gameUI.elements.guideSwitch) {
+                    window.gameUI.elements.guideSwitch.checked = enabled;
+                }
             }
         });
 
         ttsSwitch.addEventListener('change', (e) => {
+            const enabled = e.target.checked;
+            localStorage.setItem('pokemon-tcg-tts', enabled);
+
             if (window.gameUI) {
-                window.gameUI.ttsEnabled = e.target.checked;
+                window.gameUI.ttsEnabled = enabled;
+                if (!enabled) window.gameUI.cancelSpeech();
+                // Sync UI switch if visible
+                if (window.gameUI.elements.ttsSwitch) {
+                    window.gameUI.elements.ttsSwitch.checked = enabled;
+                }
             }
         });
 

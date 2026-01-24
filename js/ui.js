@@ -82,12 +82,8 @@ class GameUI {
             gameOverMessage: document.getElementById('game-over-message'),
             newGameBtn: document.getElementById('new-game-btn'),
 
-            // Feedback form
-            feedbackForm: document.getElementById('feedback-form'),
-            captchaQuestion: document.getElementById('captcha-question'),
-            captchaAnswer: document.getElementById('captcha-answer'),
-            captchaAnswer: document.getElementById('captcha-answer'),
-            submitFeedbackBtn: document.getElementById('submit-feedback-btn'),
+            // Feedback form removed
+
 
             // TTS
             ttsSwitch: document.getElementById('tts-switch'),
@@ -126,18 +122,19 @@ class GameUI {
         });
 
         // Feedback form submission
-        // Feedback form submission
-        this.elements.feedbackForm?.addEventListener('submit', (e) => this.handleFeedbackSubmit(e));
+
 
         // TTS Toggle
         this.elements.ttsSwitch?.addEventListener('change', (e) => {
             this.ttsEnabled = e.target.checked;
+            localStorage.setItem('pokemon-tcg-tts', this.ttsEnabled);
             this.cancelSpeech();
         });
 
         // Guide Toggle
         this.elements.guideSwitch?.addEventListener('change', (e) => {
             this.guideEnabled = e.target.checked;
+            localStorage.setItem('pokemon-tcg-guide', this.guideEnabled);
             this.toggleGuidePanel();
         });
 
@@ -162,7 +159,17 @@ class GameUI {
             }
         }
 
-        // Initialize state
+        // Initialize state from LocalStorage if available
+        const storedGuide = localStorage.getItem('pokemon-tcg-guide');
+        if (storedGuide !== null) {
+            this.guideEnabled = storedGuide === 'true';
+        }
+
+        const storedTTS = localStorage.getItem('pokemon-tcg-tts');
+        if (storedTTS !== null) {
+            this.ttsEnabled = storedTTS === 'true';
+        }
+
         if (this.elements.guideSwitch) {
             this.elements.guideSwitch.checked = this.guideEnabled;
             this.toggleGuidePanel();
@@ -1360,70 +1367,10 @@ class GameUI {
             '💀 Defeat! The CPU won this time!';
         this.elements.gameOverScreen.classList.add('active');
 
-        // Initialize feedback form
-        this.initFeedbackForm();
+
     }
 
-    initFeedbackForm() {
-        if (!this.elements.feedbackForm) return;
 
-        // Reset form
-        this.elements.feedbackForm.reset();
-        this.elements.submitFeedbackBtn.disabled = false;
-
-        // Generate captcha
-        this.generateCaptcha();
-    }
-
-    generateCaptcha() {
-        const num1 = Math.floor(Math.random() * 10) + 1;
-        const num2 = Math.floor(Math.random() * 10) + 1;
-        this.captchaResult = num1 + num2;
-
-        if (this.elements.captchaQuestion) {
-            this.elements.captchaQuestion.textContent = `What is ${num1} + ${num2}?`;
-        }
-
-        if (this.elements.captchaAnswer) {
-            this.elements.captchaAnswer.value = '';
-        }
-    }
-
-    handleFeedbackSubmit(e) {
-        e.preventDefault();
-
-        const userAnswer = parseInt(this.elements.captchaAnswer.value);
-
-        if (userAnswer !== this.captchaResult) {
-            this.showMessage("Human verification failed! Please try again.");
-            this.generateCaptcha();
-            return;
-        }
-
-        const quality = document.getElementById('feedback-quality').value;
-        const bugs = document.getElementById('feedback-bugs').value || "None";
-        const enhancements = document.getElementById('feedback-enhancements').value || "None";
-
-        const subject = encodeURIComponent("Pokemon TCG Feedback");
-        const body = encodeURIComponent(
-            `Game Quality: ${quality}/5\n\n` +
-            `Bugs Encountered:\n${bugs}\n\n` +
-            `Enhancement Requests:\n${enhancements}`
-        );
-
-        const mailtoLink = `mailto:markhorst@gmail.com?subject=${subject}&body=${body}`;
-
-        // Open email client
-        window.location.href = mailtoLink;
-
-        this.showMessage("Thank you! Opening your email client...");
-        this.elements.submitFeedbackBtn.disabled = true;
-
-        // Reset after a delay so they can send again if needed
-        setTimeout(() => {
-            this.elements.submitFeedbackBtn.disabled = false;
-        }, 3000);
-    }
 
     startNewGame() {
         this.elements.gameOverScreen?.classList.remove('active');
