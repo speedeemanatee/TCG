@@ -1713,6 +1713,7 @@ const Potion = {
     name: 'Potion',
     cardType: CardType.TRAINER,
     trainerType: TrainerType.ITEM,
+    image: null,
     effect: 'heal',
     healAmount: 30,
     description: 'Heal 30 damage from one of your Pokemon.'
@@ -1723,6 +1724,7 @@ const Switch = {
     name: 'Switch',
     cardType: CardType.TRAINER,
     trainerType: TrainerType.ITEM,
+    image: null,
     effect: 'switch',
     description: 'Switch your Active Pokemon with one of your Benched Pokemon.'
 };
@@ -1732,6 +1734,7 @@ const ProfessorsResearch = {
     name: 'Professor\'s Research',
     cardType: CardType.TRAINER,
     trainerType: TrainerType.SUPPORTER,
+    image: null,
     effect: 'discardAndDraw',
     drawAmount: 7,
     description: 'Discard your hand and draw 7 cards.'
@@ -1742,6 +1745,7 @@ const PokeBall = {
     name: 'Poke Ball',
     cardType: CardType.TRAINER,
     trainerType: TrainerType.ITEM,
+    image: null,
     effect: 'searchPokemon',
     description: 'Flip a coin. If heads, search your deck for a Basic Pokemon and put it into your hand. Shuffle your deck.'
 };
@@ -1751,6 +1755,7 @@ const EnergyRetrieval = {
     name: 'Energy Retrieval',
     cardType: CardType.TRAINER,
     trainerType: TrainerType.ITEM,
+    image: null,
     effect: 'retrieveEnergy',
     retrieveAmount: 2,
     description: 'Put up to 2 basic Energy cards from your discard pile into your hand.'
@@ -1761,6 +1766,7 @@ const SuperPotion = {
     name: 'Super Potion',
     cardType: CardType.TRAINER,
     trainerType: TrainerType.ITEM,
+    image: null,
     effect: 'superHeal',
     healAmount: 60,
     discardEnergy: 1,
@@ -1772,6 +1778,7 @@ const Marnie = {
     name: 'Marnie',
     cardType: CardType.TRAINER,
     trainerType: TrainerType.SUPPORTER,
+    image: null,
     effect: 'shuffleAndDraw',
     drawAmount: 5,
     opponentDraw: 4,
@@ -1783,6 +1790,7 @@ const BossOrders = {
     name: 'Boss\'s Orders',
     cardType: CardType.TRAINER,
     trainerType: TrainerType.SUPPORTER,
+    image: null,
     effect: 'gust',
     description: 'Switch one of your opponent\'s Benched Pokemon with their Active Pokemon.'
 };

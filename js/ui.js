@@ -814,6 +814,16 @@ class GameUI {
                 const replaceBenchIdx = this.state.player.bench.indexOf(target);
                 if (replaceBenchIdx !== -1) {
                     this.engine.setActiveFromBench('player', replaceBenchIdx);
+
+                    // If this was a forced replacement (knockout), we need to advance game flow
+                    if (this.state.currentTurn === 'cpu') {
+                        // CPU turn killed us, we replaced, now turn ends
+                        this.engine.endTurn();
+                    } else {
+                        // We killed ourselves (confusion/poison) or ended turn without active
+                        // End our turn properly
+                        this.endPlayerTurn();
+                    }
                 }
                 break;
         }
