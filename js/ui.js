@@ -17,6 +17,9 @@ class GameUI {
         this.speechSynth = window.speechSynthesis;
         this.currentUtterance = null;
 
+        // Guide State
+        this.guideEnabled = false;
+
         // DOM element cache
         this.elements = {};
 
@@ -86,7 +89,12 @@ class GameUI {
             submitFeedbackBtn: document.getElementById('submit-feedback-btn'),
 
             // TTS
-            ttsSwitch: document.getElementById('tts-switch')
+            ttsSwitch: document.getElementById('tts-switch'),
+
+            // Guide
+            guideSwitch: document.getElementById('guide-switch'),
+            rookieGuide: document.getElementById('rookie-guide'),
+            guideList: document.getElementById('guide-list')
         };
     }
 
@@ -118,6 +126,12 @@ class GameUI {
             this.ttsEnabled = e.target.checked;
             this.cancelSpeech();
         });
+
+        // Guide Toggle
+        this.elements.guideSwitch?.addEventListener('change', (e) => {
+            this.guideEnabled = e.target.checked;
+            this.toggleGuidePanel();
+        });
     }
 
     // ============================================
@@ -140,6 +154,7 @@ class GameUI {
         this.renderCPUHand();
 
         this.renderTurnInfo();
+        this.renderGuide(); // Update guide
         this.updateActionButtons();
 
         if (this.state.gameOver) {
@@ -380,12 +395,21 @@ class GameUI {
             cardEl.classList.add(`status-${activePokemon.statusCondition}`);
         }
 
+        // Determine artwork content
+        const artworkContent = card.image
+            ? `<img src="${card.image}" alt="${card.name}" class="card-artwork-img">`
+            : `<div class="placeholder">
+                <span class="placeholder-icon">${card.placeholderIcon || '🎴'}</span>
+               </div>`;
+
         cardEl.innerHTML = `
             <div class="card-header">
                 <span class="card-name">${card.name}</span>
                 <span class="card-hp">${activePokemon.currentHP}/${card.hp} HP</span>
             </div>
-            <div class="card-stage">${card.stage}</div>
+            <div class="card-artwork active-art">
+                ${artworkContent}
+            </div>
             <div class="hp-bar">
                 <div class="hp-fill" style="width: ${(activePokemon.currentHP / card.hp) * 100}%"></div>
             </div>
@@ -1207,6 +1231,80 @@ class GameUI {
     startNewGame() {
         this.elements.gameOverScreen?.classList.remove('active');
         window.startNewGame();
+    }
+
+    // ============================================
+    // ROOKIE GUIDE
+    // ============================================
+
+    toggleGuidePanel() {
+        if (!this.elements.rookieGuide) return;
+
+        if (this.guideEnabled) {
+            this.elements.rookieGuide.classList.add('active');
+            this.renderGuide();
+        } else {
+            this.elements.rookieGuide.classList.remove('active');
+        }
+    }
+
+    renderGuide() {
+        if (!this.guideEnabled || !this.elements.guideList) return;
+
+        const isPlayerTurn = this.state.currentTurn === 'player';
+        const actions = this.state.actions;
+
+        // Define checklist items
+        const checklist = [
+            {
+                text: "Draw a Card",
+                done: actions.hasDrawn || this.state.turnNumber === 1, // Done automatically
+                type: 'draw'
+            },
+            {
+                text: "Play Basic Pokémon",
+                done: this.state.player.bench.length > 0 && this.state.player.playedThisTurn.length > 0, // Approximate check
+                type: 'play'
+            },
+            {
+                text: "Evolve Pokémon",
+                done: false, // Hard to track specifically without more flags, leave as general advice
+                type: 'evolve'
+            },
+            {
+                text: "Attach Energy",
+                done: actions.hasAttachedEnergy,
+                type: 'energy'
+            },
+            {
+                text: "Play Trainer Cards",
+                done: actions.hasPlayedSupporter, // Tracks supporter at least
+                type: 'trainer'
+            },
+            {
+                text: "Retreat Active",
+                done: actions.hasRetreated,
+                type: 'retreat'
+            },
+            {
+                text: "Attack (Ends Turn)",
+                done: false, // If attacked, turn ends, so this is always pending
+                type: 'attack'
+            }
+        ];
+
+        let html = '';
+        checklist.forEach(item => {
+            const isDone = isPlayerTurn && item.done;
+            html += `
+                <div class="guide-item ${isDone ? 'done' : ''}">
+                    <div class="guide-checkbox"></div>
+                    <span>${item.text}</span>
+                </div>
+            `;
+        });
+
+        this.elements.guideList.innerHTML = html;
     }
 }
 

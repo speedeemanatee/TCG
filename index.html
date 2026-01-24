@@ -76,12 +76,21 @@
                 <h1>Pokémon TCG</h1>
             </div>
             <div class="header-right">
-                <div class="tts-toggle">
-                    <label class="switch">
-                        <input type="checkbox" id="tts-switch">
-                        <span class="slider round"></span>
-                    </label>
-                    <span class="tts-label">Voice</span>
+                <div class="toggle-group">
+                    <div class="tts-toggle" title="Enable Rookie Guide">
+                        <label class="switch">
+                            <input type="checkbox" id="guide-switch">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="tts-label">Guide</span>
+                    </div>
+                    <div class="tts-toggle" title="Enable Voice Narration">
+                        <label class="switch">
+                            <input type="checkbox" id="tts-switch">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="tts-label">Voice</span>
+                    </div>
                 </div>
                 <span id="phase-info">MAIN</span>
             </div>
@@ -191,6 +200,12 @@
         <aside class="game-log-panel">
             <h3>Game Log</h3>
             <div id="game-log" class="game-log"></div>
+        </aside>
+
+        <!-- Rookie Guide Panel -->
+        <aside class="rookie-guide-panel" id="rookie-guide">
+            <h3>Turn Guide</h3>
+            <div id="guide-list" class="guide-list"></div>
         </aside>
 
         <!-- Card Detail Panel -->
