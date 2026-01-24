@@ -2298,3 +2298,76 @@ input:checked+.slider:before {
     background: linear-gradient(180deg, #9ca3af, var(--bg-tertiary)); 
 }
 
+
+/* Responsive Landscape Mode (Tablets/Surfaces) */
+@media screen and (max-height: 900px) {
+    .start-content {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100vh;
+    }
+
+    .title-poke {
+        font-size: 3.5rem; /* Smaller title */
+        -webkit-text-stroke: 1.5px #2a4480;
+    }
+
+    .title-sub {
+        font-size: 1rem;
+        letter-spacing: 4px;
+        margin-top: 0;
+    }
+
+    .title-container {
+        margin-bottom: 0.5rem !important;
+        padding: 0.5rem !important;
+        background: none; /* Reduce visual noise */
+    }
+
+    .deck-selection-header {
+        margin-bottom: 0.5rem !important;
+        opacity: 1 !important;
+        animation: none;
+    }
+
+    .deck-selection-header h2 {
+        font-size: 1.4rem;
+        margin-bottom: 0.1rem;
+    }
+
+    .deck-preview {
+        margin-top: 0;
+        gap: 1rem;
+        max-width: 850px !important;
+    }
+
+    .deck-art-container {
+        height: 100px; /* Compact art */
+    }
+
+    .deck-info {
+        padding: 0.75rem;
+    }
+    
+    .deck-choice {
+        min-width: 160px;
+    }
+
+    .start-btn {
+        margin-top: 0.5rem;
+        padding: 0.6rem 2rem;
+        font-size: 1rem;
+    }
+}
+
+/* Scroll fallback */
+@media screen and (max-height: 600px) {
+    .start-content {
+        height: auto;
+        overflow-y: auto;
+        display: block;
+    }
+}
+

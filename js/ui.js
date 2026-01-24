@@ -520,11 +520,22 @@ class GameUI {
                 `;
 
             case CardType.TRAINER:
+                // Determine artwork content
+                const trainerArtwork = card.image
+                    ? `<img src="${card.image}" alt="${card.name}" class="card-artwork-img">`
+                    : `<div class="placeholder">
+                        <span class="placeholder-icon">${card.placeholderIcon || '🎴'}</span>
+                        <span class="placeholder-text">Trainer Art</span>
+                       </div>`;
+
                 return `
                     <div class="trainer-card">
                         <div class="trainer-header">
                             <span class="trainer-name">${card.name}</span>
                             <span class="trainer-type">${card.trainerType}</span>
+                        </div>
+                        <div class="card-artwork">
+                            ${trainerArtwork}
                         </div>
                         <div class="trainer-description">${card.description}</div>
                     </div>
