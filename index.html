@@ -23,39 +23,95 @@
             <p class="subtitle">Battle Arena</p>
             <div class="deck-preview">
                 <div class="deck-choice selectable selected" data-deck="fire">
-                    <div class="deck-icon fire"></div>
-                    <h3>Fire Deck</h3>
-                    <p>Charizard, Arcanine</p>
+                    <div class="deck-art-container">
+                        <img src="assets/pokemon/charizard.png" alt="Fire Deck" class="deck-art-img">
+                        <div class="deck-art-placeholder fire">
+                            <span>🔥</span>
+                            <small>coming soon</small>
+                        </div>
+                    </div>
+                    <div class="deck-info">
+                        <h3>Fire Deck</h3>
+                        <p>Charizard, Arcanine</p>
+                    </div>
                 </div>
                 <div class="deck-choice selectable" data-deck="water">
-                    <div class="deck-icon water"></div>
-                    <h3>Water Deck</h3>
-                    <p>Blastoise, Lapras</p>
+                    <div class="deck-art-container">
+                        <img src="assets/pokemon/blastoise.png" alt="Water Deck" class="deck-art-img">
+                        <div class="deck-art-placeholder water">
+                            <span>💧</span>
+                            <small>coming soon</small>
+                        </div>
+                    </div>
+                    <div class="deck-info">
+                        <h3>Water Deck</h3>
+                        <p>Blastoise, Lapras</p>
+                    </div>
                 </div>
                 <div class="deck-choice selectable" data-deck="grass">
-                    <div class="deck-icon grass"></div>
-                    <h3>Grass Deck</h3>
-                    <p>Venusaur, Vileplume</p>
+                    <div class="deck-art-container">
+                        <img src="assets/pokemon/venusaur.png" alt="Grass Deck" class="deck-art-img">
+                        <div class="deck-art-placeholder grass">
+                            <span>🌿</span>
+                            <small>Art Coming Soon</small>
+                        </div>
+                    </div>
+                    <div class="deck-info">
+                        <h3>Grass Deck</h3>
+                        <p>Venusaur, Vileplume</p>
+                    </div>
                 </div>
                 <div class="deck-choice selectable" data-deck="electric">
-                    <div class="deck-icon electric"></div>
-                    <h3>Electric Deck</h3>
-                    <p>Raichu, Zapdos</p>
+                    <div class="deck-art-container">
+                        <img src="assets/pokemon/raichu.png" alt="Electric Deck" class="deck-art-img">
+                        <div class="deck-art-placeholder electric">
+                            <span>⚡</span>
+                            <small>Art Coming Soon</small>
+                        </div>
+                    </div>
+                    <div class="deck-info">
+                        <h3>Electric Deck</h3>
+                        <p>Raichu, Zapdos</p>
+                    </div>
                 </div>
                 <div class="deck-choice selectable" data-deck="psychic">
-                    <div class="deck-icon psychic"></div>
-                    <h3>Psychic Deck</h3>
-                    <p>Alakazam, Gengar</p>
+                    <div class="deck-art-container">
+                        <img src="assets/pokemon/alakazam.png" alt="Psychic Deck" class="deck-art-img">
+                        <div class="deck-art-placeholder psychic">
+                            <span>🔮</span>
+                            <small>Art Coming Soon</small>
+                        </div>
+                    </div>
+                    <div class="deck-info">
+                        <h3>Psychic Deck</h3>
+                        <p>Alakazam, Gengar</p>
+                    </div>
                 </div>
                 <div class="deck-choice selectable" data-deck="fighting">
-                    <div class="deck-icon fighting"></div>
-                    <h3>Fighting Deck</h3>
-                    <p>Machamp, Onix</p>
+                    <div class="deck-art-container">
+                        <img src="assets/pokemon/machamp.png" alt="Fighting Deck" class="deck-art-img">
+                        <div class="deck-art-placeholder fighting">
+                            <span>🥊</span>
+                            <small>Art Coming Soon</small>
+                        </div>
+                    </div>
+                    <div class="deck-info">
+                        <h3>Fighting Deck</h3>
+                        <p>Machamp, Onix</p>
+                    </div>
                 </div>
                 <div class="deck-choice selectable" data-deck="colorless">
-                    <div class="deck-icon colorless"></div>
-                    <h3>Colorless Deck</h3>
-                    <p>Pidgeot, Snorlax</p>
+                    <div class="deck-art-container">
+                        <img src="assets/pokemon/snorlax.png" alt="Colorless Deck" class="deck-art-img">
+                        <div class="deck-art-placeholder colorless">
+                            <span>⚪</span>
+                            <small>Art Coming Soon</small>
+                        </div>
+                    </div>
+                    <div class="deck-info">
+                        <h3>Colorless Deck</h3>
+                        <p>Pidgeot, Snorlax</p>
+                    </div>
                 </div>
             </div>
             <button id="start-game-btn" class="start-btn">
@@ -280,6 +336,13 @@
         document.getElementById('start-game-btn').addEventListener('click', function () {
             document.getElementById('start-screen').classList.remove('active');
             document.getElementById('game-screen').classList.add('active');
+        });
+
+        // Handle missing deck images
+        document.querySelectorAll('.deck-art-img').forEach(img => {
+            img.onerror = function () {
+                this.style.display = 'none';
+            };
         });
     </script>
 </body>

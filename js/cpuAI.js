@@ -25,12 +25,22 @@ class CPUAI {
         await this.performActions();
 
         // Attack phase
-        await this.performAttack();
+        const attackIndex = await this.performAttack();
 
-        // End turn
+        // Return attack choice to UI for animation handling
+        // logic for actual execution will happen in UI or be called here if UI didn't handle it?
+        // Actually, to keep it simple: return the plan. UI will interpret.
+
+        if (typeof attackIndex === 'number') {
+            return { action: 'attack', index: attackIndex };
+        }
+
+        // End turn if no attack (or after attack logic elsewhere)
         if (!this.state.gameOver) {
             this.engine.endTurn();
         }
+
+        return { action: 'end' };
     }
 
     async delay(ms) {
@@ -468,7 +478,10 @@ class CPUAI {
         const bestAttackIndex = this.chooseBestAttack(usableAttacks);
 
         await this.delay(this.thinkingDelay);
-        this.engine.attack('cpu', bestAttackIndex);
+
+        // Return the choice instead of executing immediately
+        // allowing the UI to handle animation
+        return bestAttackIndex;
     }
 
     chooseBestAttack(usableAttacks) {

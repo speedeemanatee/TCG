@@ -562,10 +562,13 @@ class GameUI {
             return;
         }
 
-        // Otherwise, play to bench
         if (this.state.player.bench.length < 5) {
             this.engine.playBasicToBench('player', card.uid);
             this.render();
+
+            // Highlight the new bench pokemon
+            const newBenchEl = this.elements.playerBench.lastElementChild;
+            if (newBenchEl) newBenchEl.classList.add('anim-play-glow');
         } else {
             this.showMessage("Bench is full!");
         }
@@ -625,6 +628,11 @@ class GameUI {
         if (targets.length === 1) {
             this.engine.attachEnergy('player', card.uid, targets[0]);
             this.render();
+
+            // Highlight target
+            const targetUid = targets[0].card.uid;
+            const targetEl = document.querySelector(`[data-uid="${targetUid}"]`);
+            if (targetEl) targetEl.classList.add('anim-play-glow');
         } else {
             // Set up target selection
             this.awaitingTarget = true;
@@ -973,6 +981,14 @@ class GameUI {
     // ============================================
 
     async executeAttack(attackIndex) {
+        // Trigger Animation
+        await this.animateAttack('player');
+
+        // Calculate potential damage for visualization (simplified)
+        // Ideally engine returns actual damage dealt, but we'll approximate/await implementation update
+        // access damage logic if possible, or just animate generic shake on CPU
+        await this.animateDamage('cpu', this.state.player.active.card.attacks[attackIndex].damage);
+
         const success = this.engine.attack('player', attackIndex);
 
         if (success) {
@@ -1022,8 +1038,35 @@ class GameUI {
         }
 
         // Execute CPU AI
-        await this.cpu.executeTurn();
+        const turnResult = await this.cpu.executeTurn();
         this.render();
+
+        // Handle CPU Attack with Animation
+        if (turnResult && turnResult.action === 'attack') {
+            const attackIndex = turnResult.index;
+
+            // Animation
+            await this.animateAttack('cpu');
+
+            // Damage Animation (approximate)
+            const damage = this.state.cpu.active.card.attacks[attackIndex].damage;
+            await this.animateDamage('player', damage);
+
+            // Execute Attack
+            const success = this.engine.attack('cpu', attackIndex);
+
+            if (success) {
+                this.render();
+
+                // Check for knockout - Player needs to choose new active
+                if (!this.state.player.active && this.state.player.bench.length > 0 && !this.state.gameOver) {
+                    // Logic handled below
+                } else if (!this.state.gameOver) {
+                    this.engine.endTurn();
+                    this.render();
+                }
+            }
+        }
 
         // Check if player needs new active
         if (!this.state.player.active && this.state.player.bench.length > 0 && !this.state.gameOver) {
@@ -1039,6 +1082,62 @@ class GameUI {
             this.engine.startTurn();
             this.render();
         }
+    }
+
+    // ============================================
+    // ANIMATIONS
+    // ============================================
+
+    async animateAttack(attackerOwner) {
+        const attackerEl = attackerOwner === 'player' ?
+            this.elements.playerActive?.querySelector('.card') :
+            this.elements.cpuActive?.querySelector('.card');
+
+        if (!attackerEl) return;
+
+        const animClass = attackerOwner === 'player' ? 'anim-attack-player' : 'anim-attack-cpu';
+        attackerEl.classList.add(animClass);
+
+        // Wait for lunge to reach target
+        await new Promise(r => setTimeout(r, 200));
+    }
+
+    async animateDamage(targetOwner, damage) {
+        if (damage <= 0) return;
+
+        const targetZone = targetOwner === 'player' ? this.elements.playerActive : this.elements.cpuActive;
+        const targetEl = targetZone?.querySelector('.card');
+
+        if (targetEl) {
+            // Remove class to restart animation if needed
+            targetEl.classList.remove('anim-damage');
+            void targetEl.offsetWidth; // Trigger reflow
+            targetEl.classList.add('anim-damage');
+
+            // Floating text
+            this.showFloatingDamage(targetEl, damage);
+        }
+
+        // Wait for shake/rest of lunge
+        await new Promise(r => setTimeout(r, 300));
+    }
+
+    showFloatingDamage(targetEl, damage) {
+        const rect = targetEl.getBoundingClientRect();
+        const floatEl = document.createElement('div');
+        floatEl.className = 'floating-damage';
+        floatEl.textContent = `-${damage}`;
+
+        // Position center of card
+        floatEl.style.left = `${rect.left + rect.width / 2 - 20}px`;
+        floatEl.style.top = `${rect.top + rect.height / 2}px`;
+
+        document.body.appendChild(floatEl);
+
+        // Cleanup
+        setTimeout(() => {
+            floatEl.remove();
+        }, 1000);
     }
 
     // ============================================
