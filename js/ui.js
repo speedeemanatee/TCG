@@ -1348,6 +1348,8 @@ class GameUI {
     }
 
     getCardDetailHTML(card) {
+        const hint = window.innerWidth <= 768 ? '<div class="mobile-tap-hint" style="text-align: center; margin-top: 1rem; color: var(--accent-secondary); font-weight: 600;">👆 Tap card again to play</div>' : '';
+
         if (card.cardType === CardType.POKEMON) {
             return `
                 <div class="detail-header ${card.pokemonType}">
@@ -1373,6 +1375,7 @@ class GameUI {
                         ${card.resistance ? `Resistance: ${card.resistance} -30` : ''}
                         Retreat: ${card.retreatCost}
                     </div>
+                    ${hint}
                 </div>
             `;
         } else if (card.cardType === CardType.TRAINER) {
@@ -1383,6 +1386,7 @@ class GameUI {
                 </div>
                 <div class="detail-body">
                     <p>${card.description}</p>
+                    ${hint}
                 </div>
             `;
         } else {
@@ -1390,9 +1394,13 @@ class GameUI {
                 <div class="detail-header ${card.energyType}">
                     <h3>${card.name}</h3>
                 </div>
+                <div class="detail-body">
+                     ${hint}
+                </div>
             `;
         }
     }
+
 
     showGameOver() {
         if (!this.elements.gameOverScreen) return;
