@@ -2761,3 +2761,40 @@ input:checked+.slider:before {
     color: #1d4ed8;
     border-color: rgba(59, 130, 246, 0.2);
 }
+
+/* Toast Notifications */
+.game-toast {
+    position: fixed;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, 0) scale(0.9);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    border: 1px solid var(--accent-primary);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    z-index: 3000;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    width: 80%;
+    max-width: 400px;
+}
+
+.game-toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+}
+
+@media (max-width: 600px) {
+
+    /* Ensure player side clears the fixed hand/action panel */
+    .player-side {
+        padding-bottom: 250px !important;
+        /* Force extra space at bottom of board content */
+    }
+}

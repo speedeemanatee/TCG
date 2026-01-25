@@ -1283,6 +1283,28 @@ class GameUI {
 
     showMessage(text) {
         this.addLogEntry({ message: text, timestamp: Date.now() });
+        this.showToast(text);
+    }
+
+    showToast(text) {
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.className = 'game-toast';
+        toast.textContent = text;
+        document.body.appendChild(toast);
+
+        // Trigger animation
+        requestAnimationFrame(() => {
+            toast.classList.add('show');
+        });
+
+        // Remove after delay
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }, 3000);
     }
 
     addLogEntry(entry) {
