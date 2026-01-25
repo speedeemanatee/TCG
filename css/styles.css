@@ -1765,8 +1765,9 @@ h3 {
 @media (max-width: 600px) {
 
     /* Mobile Core Adjustments */
+    /* Mobile Core Adjustments */
     .screen {
-        padding-bottom: 140px;
+        padding-bottom: 250px;
         /* Increased space for action panel + fixed start buttons */
         overflow-y: auto;
         /* Allow body scroll if needed */
