@@ -38,6 +38,7 @@ function initGame() {
 
     // Setup Settings (Title Screen)
     setupSettings();
+    setupChangelog();
 
     console.log('✅ Game objects created');
 }
@@ -135,6 +136,27 @@ function setupSettings() {
     });
 }
 
+function setupChangelog() {
+    const changelogBtn = document.getElementById('changelog-btn');
+    const template = document.getElementById('changelog-template');
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalContent = document.getElementById('modal-content');
+
+    if (!changelogBtn || !template || !modal) return;
+
+    // Button click
+    changelogBtn.addEventListener('click', () => {
+        // Populate modal
+        modalTitle.textContent = "Changelog";
+        modalContent.innerHTML = '';
+        modalContent.appendChild(template.content.cloneNode(true));
+
+        // Show
+        modal.classList.add('active');
+    });
+}
+
 
 // Start a new game
 async function startNewGame() {
@@ -198,11 +220,20 @@ async function playerSetup() {
         return;
     }
 
-    // Auto-select first basic as active for now (could show modal)
+    // Prompt for Active Pokemon
     if (!player.active) {
-        // Sort by HP and pick best
-        basics.sort((a, b) => b.hp - a.hp);
-        gameEngine.setActiveFromHand('player', basics[0].uid);
+        // If only 1 basic, auto-select? No, let's always prompt for consistency/polish
+        // or auto-select if only 1 to save a click? 
+        // User asked for choice, so let's offer choice if >1, but if only 1 it must be active.
+
+        if (basics.length === 1) {
+            gameEngine.setActiveFromHand('player', basics[0].uid);
+            gameUI.render(); // Render to show active
+        } else {
+            const activeUid = await gameUI.promptActiveSelection(basics);
+            gameEngine.setActiveFromHand('player', activeUid);
+            gameUI.render(); // Render to show active
+        }
     }
 
     // Put remaining basics on bench
@@ -211,8 +242,12 @@ async function playerSetup() {
         c.stage === Stage.BASIC
     );
 
-    for (const basic of remainingBasics.slice(0, 5)) {
-        gameEngine.playBasicToBench('player', basic.uid);
+    if (remainingBasics.length > 0) {
+        // Prompt for bench
+        const benchUids = await gameUI.promptBenchSelection(remainingBasics);
+        benchUids.forEach(uid => {
+            gameEngine.playBasicToBench('player', uid);
+        });
     }
 
     gameUI.render();

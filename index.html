@@ -150,6 +150,18 @@
                 </svg>
                 <span>Settings</span>
             </button>
+            <button id="changelog-btn" class="secondary-btn"
+                style="margin-top: 1rem; margin-left: 1rem; background: transparent; border: 1px solid var(--text-secondary); color: var(--text-secondary); padding: 0.5rem 2rem; border-radius: 20px; display: inline-flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <span>Changelog</span>
+            </button>
         </div>
     </div>
 
@@ -371,6 +383,41 @@
             </button>
         </div>
     </div>
+
+    <!-- Scripts -->
+    <template id="changelog-template">
+        <div class="changelog-container">
+            <div class="changelog-entry">
+                <div class="entry-date">2026-01-25</div>
+                <ul class="entry-list">
+                    <li><span class="tag-new">Gameplay</span> Manual Setup: choose Active & Bench Pokémon</li>
+                    <li><span class="tag-new">Feature</span> Added Changelog</li>
+                </ul>
+            </div>
+            <div class="changelog-entry">
+                <div class="entry-date">2026-01-24</div>
+                <ul class="entry-list">
+                    <li><span class="tag-new">Light Mode</span> Added light/dark theme toggle</li>
+                    <li><span class="tag-new">Settings</span> Added persistence for settings</li>
+                    <li><span class="tag-update">UI</span> Highlight active turn player</li>
+                    <li><span class="tag-new">Art</span> Added Supporter & Energy card art</li>
+                    <li><span class="tag-update">Visuals</span> Improved title screen aesthetics</li>
+                    <li><span class="tag-new">Deck</span> Added Darkrai V deck</li>
+                    <li><span class="tag-update">Content</span> Added more card art</li>
+                    <li><span class="tag-new">Animation</span> Added attack and HP change animations</li>
+                </ul>
+            </div>
+            <div class="changelog-entry">
+                <div class="entry-date">2026-01-23</div>
+                <ul class="entry-list">
+                    <li><span class="tag-new">Feature</span> Added Turn Guide for new players</li>
+                    <li><span class="tag-new">Content</span> Added new starter decks</li>
+                    <li><span class="tag-new">Art</span> Introduction of card artwork</li>
+                    <li><span class="tag-new">Accessibility</span> Added Voice Guide for younger players</li>
+                </ul>
+            </div>
+        </div>
+    </template>
 
     <!-- Scripts -->
     <script src="js/cards.js"></script>

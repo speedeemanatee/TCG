@@ -1450,6 +1450,134 @@ class GameUI {
 
         this.elements.guideList.innerHTML = html;
     }
+
+    // ============================================
+    // PLAYER SETUP PROMPTS
+    // ============================================
+
+    promptActiveSelection(basics) {
+        return new Promise((resolve) => {
+            this.showModal("Select Active Pokémon", "");
+
+            const container = document.createElement('div');
+            container.className = 'card-selection-container';
+            container.style.display = 'flex';
+            container.style.gap = '1rem';
+            container.style.justifyContent = 'center';
+            container.style.flexWrap = 'wrap';
+
+            basics.forEach(card => {
+                const cardEl = this.createCardElement(card, 'player', 'hand');
+                cardEl.classList.add('selectable');
+                cardEl.onclick = () => {
+                    this.hideModal();
+                    resolve(card.uid);
+                };
+                container.appendChild(cardEl);
+            });
+
+            this.elements.modalContent.appendChild(container);
+        });
+    }
+
+    promptBenchSelection(basics) {
+        return new Promise((resolve) => {
+            if (basics.length === 0) {
+                resolve([]);
+                return;
+            }
+
+            this.showModal("Select Bench Pokémon (Optional)", "");
+
+            const container = document.createElement('div');
+            container.className = 'card-selection-container';
+            container.style.display = 'flex';
+            container.style.gap = '1rem';
+            container.style.justifyContent = 'center';
+            container.style.flexWrap = 'wrap';
+            container.style.marginBottom = '2rem';
+
+            const selectedUids = new Set();
+
+            basics.forEach(card => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'selection-wrapper';
+                wrapper.style.position = 'relative';
+                wrapper.style.cursor = 'pointer';
+
+                const cardEl = this.createCardElement(card, 'player', 'hand');
+                cardEl.style.transform = 'scale(0.8)';
+                cardEl.style.margin = '0';
+
+                // Selection indicator
+                const indicator = document.createElement('div');
+                indicator.className = 'selection-indicator';
+                indicator.style.position = 'absolute';
+                indicator.style.top = '-10px';
+                indicator.style.right = '-10px';
+                indicator.style.width = '24px';
+                indicator.style.height = '24px';
+                indicator.style.borderRadius = '50%';
+                indicator.style.background = 'var(--success)';
+                indicator.style.color = 'white';
+                indicator.style.display = 'flex';
+                indicator.style.alignItems = 'center';
+                indicator.style.justifyContent = 'center';
+                indicator.style.zIndex = '10';
+                indicator.innerHTML = '✓';
+                indicator.style.opacity = selectedUids.has(card.uid) ? '1' : '0';
+
+                wrapper.onclick = () => {
+                    if (selectedUids.has(card.uid)) {
+                        selectedUids.delete(card.uid);
+                        indicator.style.opacity = '0';
+                        cardEl.style.opacity = '0.7';
+                    } else {
+                        if (selectedUids.size >= 5) {
+                            this.showMessage("Max 5 Bench Pokémon!");
+                            return;
+                        }
+                        selectedUids.add(card.uid);
+                        indicator.style.opacity = '1';
+                        cardEl.style.opacity = '1';
+                    }
+                };
+
+                wrapper.appendChild(cardEl);
+                wrapper.appendChild(indicator);
+                container.appendChild(wrapper);
+            });
+
+            const confirmBtn = document.createElement('button');
+            confirmBtn.className = 'start-btn';
+            confirmBtn.style.padding = '0.5rem 2rem';
+            confirmBtn.textContent = 'Confirm Bench';
+            confirmBtn.onclick = () => {
+                this.hideModal();
+                resolve(Array.from(selectedUids));
+            };
+
+            this.elements.modalContent.appendChild(container);
+            this.elements.modalContent.appendChild(confirmBtn);
+        });
+    }
+
+    showModal(title, content) {
+        if (!this.elements.modal) return;
+        this.elements.modalTitle.textContent = title;
+        if (typeof content === 'string') {
+            this.elements.modalContent.innerHTML = content;
+        } else {
+            this.elements.modalContent.innerHTML = '';
+            this.elements.modalContent.appendChild(content);
+        }
+        this.elements.modal.classList.add('active');
+    }
+
+    hideModal() {
+        if (!this.elements.modal) return;
+        this.elements.modal.classList.remove('active');
+    }
 }
 
 // Global log update function
