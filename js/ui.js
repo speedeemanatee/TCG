@@ -11,6 +11,7 @@ class GameUI {
         this.selectedAction = null;
         this.awaitingTarget = false;
         this.pendingAction = null;
+        this.mobileSelectedCardUid = null; // For mobile double-tap logic
 
         // TTS State
         this.ttsEnabled = false;
@@ -111,6 +112,17 @@ class GameUI {
         this.elements.newGameHeaderBtn?.addEventListener('click', () => {
             if (confirm('Are you sure you want to restart the game?')) {
                 this.startNewGame();
+            }
+        });
+
+        // Close card detail on outside click (Mobile)
+        window.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768 &&
+                this.elements.cardDetail &&
+                this.elements.cardDetail.classList.contains('active') &&
+                !e.target.closest('.card')) { // If not clicking a card
+                this.hideCardDetail();
+                this.mobileSelectedCardUid = null;
             }
         });
 
@@ -609,6 +621,18 @@ class GameUI {
     handleCardClick(e, card, zone) {
         e.stopPropagation();
 
+        // Mobile Inspection Logic: First tap shows details, second tap acts
+        if (window.innerWidth <= 768) {
+            if (this.mobileSelectedCardUid !== card.uid) {
+                this.mobileSelectedCardUid = card.uid;
+                this.showCardDetail(card);
+                return;
+            }
+            // Second tap proceeds...
+            this.mobileSelectedCardUid = null;
+            this.hideCardDetail();
+        }
+
         // Only allow actions on player's turn
         if (this.state.currentTurn !== 'player') {
             this.showMessage("Wait for your turn!");
@@ -798,6 +822,18 @@ class GameUI {
 
     handleActivePokemonClick(e, activePokemon, owner, benchIndex) {
         e.stopPropagation();
+
+        // Mobile Inspection Logic
+        if (window.innerWidth <= 768) {
+            const currentUid = activePokemon.card.uid;
+            if (this.mobileSelectedCardUid !== currentUid) {
+                this.mobileSelectedCardUid = currentUid;
+                this.showActivePokemonDetail(activePokemon);
+                return;
+            }
+            this.mobileSelectedCardUid = null;
+            this.hideCardDetail();
+        }
 
         if (this.awaitingTarget) {
             this.handleTargetSelection(activePokemon, owner === 'player' ? (benchIndex !== null ? 'bench' : 'active') : 'cpu', benchIndex);

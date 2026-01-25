@@ -298,6 +298,15 @@ h3 {
     overflow: hidden;
 }
 
+.start-actions {
+    margin-top: 2rem;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .start-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 40px var(--accent-glow);
@@ -1702,8 +1711,13 @@ h3 {
         right: 0.5rem;
     }
 
+    /* Hide detail panel by default on smaller desktop/tablet, active class will show it */
     .card-detail-panel {
-        display: none !important;
+        display: none;
+    }
+
+    .card-detail-panel.active {
+        display: block;
     }
 
     :root {
@@ -1720,19 +1734,197 @@ h3 {
     }
 
     .play-area {
-        gap: 0.75rem;
+        gap: 0.5rem;
     }
 
     .deck-discard-zone {
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.25rem;
     }
 
     :root {
-        --card-width: 85px;
-        --card-height: 119px;
-        --card-width-sm: 60px;
-        --card-height-sm: 84px;
+        --card-width: 80px;
+        --card-height: 112px;
+        --card-width-sm: 50px;
+        --card-height-sm: 70px;
+    }
+
+    /* Stack the side info (Deck count, etc) */
+    .side-info {
+        padding: 0.25rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .side-info h2 {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 600px) {
+
+    /* Mobile Core Adjustments */
+    .screen {
+        padding-bottom: 140px;
+        /* Increased space for action panel + fixed start buttons */
+        overflow-y: auto;
+        /* Allow body scroll if needed */
+    }
+
+    /* Fixed Start Screen Buttons */
+    #start-screen .start-actions {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(10, 10, 26, 0.95);
+        border-top: 1px solid var(--card-border);
+        padding: 1rem;
+        z-index: 1000;
+        margin: 0;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Ensure secondary actions flow well in this bar */
+    .start-actions .secondary-actions {
+        margin-top: 0.5rem !important;
+        /* Override inline style */
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Compact Header */
+    .game-header {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .game-header h1 {
+        font-size: 1rem;
+    }
+
+    #turn-info,
+    #phase-info {
+        font-size: 0.75rem;
+    }
+
+    /* Card Detail Panel -> Mobile Bottom Sheet/Overlay */
+    .card-detail-panel {
+        display: none;
+        /* Hidden by default */
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 350px;
+        height: auto;
+        max-height: 80vh;
+        overflow-y: auto;
+        bottom: auto;
+        right: auto;
+        background: var(--bg-secondary);
+        border: 2px solid var(--accent-primary);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+        z-index: 2000;
+        /* Above everything */
+        border-radius: 12px;
+        padding: 1rem;
+    }
+
+    .card-detail-panel.active {
+        display: block;
+        animation: popIn 0.2s ease-out;
+    }
+
+    @keyframes popIn {
+        from {
+            transform: translate(-50%, -40%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translate(-50%, -50%);
+            opacity: 1;
+        }
+    }
+
+    /* Add a close hint or button styling could be added via JS, 
+       but clicking outside (on overlay) usually closes. 
+       We will ensure the panel itself looks distinct. */
+
+    /* Game Board Layout */
+    .game-board {
+        padding: 0.25rem;
+        gap: 0.25rem;
+    }
+
+    .play-area {
+        gap: 0.25rem;
+        justify-content: space-between;
+    }
+
+    /* Compact Zones */
+    .active-zone h3,
+    .bench-zone h3,
+    .deck-zone h3,
+    .discard-zone h3,
+    .prizes-zone h3 {
+        display: none;
+        /* Hide labels to save space */
+    }
+
+    /* Adjust Bench to fit */
+    .bench {
+        gap: 2px;
+    }
+
+    /* Hand Display */
+    .hand-display {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 120px;
+        background: rgba(10, 10, 26, 0.95);
+        border-top: 1px solid var(--card-border);
+        padding: 0.5rem;
+        z-index: 100;
+        /* Below action panel/modals */
+        align-items: center;
+    }
+
+    .player-hand .card:hover {
+        /* Disable hover lift on mobile to prevent obstruction */
+        transform: none;
+    }
+
+    /* Action Panel - move up slightly */
+    .action-panel {
+        bottom: 130px;
+        /* Above the hand */
+        width: 90%;
+    }
+
+    .action-buttons {
+        width: 100%;
+        justify-content: center;
+        padding: 0.5rem;
+    }
+
+    .action-btn {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .action-btn span {
+        display: none;
+        /* Hide text, show icons only if space is tight? 
+                          Or keep text but smaller. Let's try keeping text */
+        display: inline;
+        font-size: 0.75rem;
     }
 }
 
@@ -2192,6 +2384,7 @@ input:checked+.slider:before {
     /* Reset previous gradient text */
     background: none;
     -webkit-background-clip: border-box;
+    background-clip: border-box;
     -webkit-text-fill-color: #ffcb05;
 
     position: relative;
