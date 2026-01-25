@@ -448,14 +448,19 @@ class GameUI {
         if (owner === 'player') {
             cardEl.addEventListener('click', (e) => this.handleCardClick(e, card, zone));
             cardEl.addEventListener('click', (e) => this.handleCardClick(e, card, zone));
-            cardEl.addEventListener('mouseenter', () => {
-                this.showCardDetail(card);
-                if (this.ttsEnabled) this.speakCard(card);
-            });
-            cardEl.addEventListener('mouseleave', () => {
-                this.hideCardDetail();
-                this.cancelSpeech();
-            });
+            cardEl.addEventListener('click', (e) => this.handleCardClick(e, card, zone));
+
+            // Only attach hover events on desktop to prevent mobile touch flickering
+            if (window.innerWidth > 768) {
+                cardEl.addEventListener('mouseenter', () => {
+                    this.showCardDetail(card);
+                    if (this.ttsEnabled) this.speakCard(card);
+                });
+                cardEl.addEventListener('mouseleave', () => {
+                    this.hideCardDetail();
+                    this.cancelSpeech();
+                });
+            }
         }
 
         return cardEl;
@@ -516,14 +521,19 @@ class GameUI {
 
         cardEl.addEventListener('click', (e) => this.handleActivePokemonClick(e, activePokemon, owner, benchIndex));
         cardEl.addEventListener('click', (e) => this.handleActivePokemonClick(e, activePokemon, owner, benchIndex));
-        cardEl.addEventListener('mouseenter', () => {
-            this.showActivePokemonDetail(activePokemon);
-            if (this.ttsEnabled) this.speakCard(activePokemon.card);
-        });
-        cardEl.addEventListener('mouseleave', () => {
-            this.hideCardDetail();
-            this.cancelSpeech();
-        });
+        cardEl.addEventListener('click', (e) => this.handleActivePokemonClick(e, activePokemon, owner, benchIndex));
+
+        // Only attach hover events on desktop
+        if (window.innerWidth > 768) {
+            cardEl.addEventListener('mouseenter', () => {
+                this.showActivePokemonDetail(activePokemon);
+                if (this.ttsEnabled) this.speakCard(activePokemon.card);
+            });
+            cardEl.addEventListener('mouseleave', () => {
+                this.hideCardDetail();
+                this.cancelSpeech();
+            });
+        }
 
         return cardEl;
     }
@@ -1574,6 +1584,9 @@ class GameUI {
                 const cardEl = this.createCardElement(card, 'player', 'hand');
                 cardEl.style.transform = 'scale(0.8)';
                 cardEl.style.margin = '0';
+                cardEl.style.pointerEvents = 'none'; // Allow click to pass to wrapper
+                cardEl.style.transition = 'all 0.2s ease';
+                cardEl.style.opacity = '0.6'; // Default unselected state
 
                 // Selection indicator
                 const indicator = document.createElement('div');
@@ -1592,20 +1605,37 @@ class GameUI {
                 indicator.style.zIndex = '10';
                 indicator.innerHTML = '✓';
                 indicator.style.opacity = selectedUids.has(card.uid) ? '1' : '0';
+                indicator.style.transform = selectedUids.has(card.uid) ? 'scale(1)' : 'scale(0)';
+                indicator.style.transition = 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+
+                // Update styles if already selected (should be empty initially but good practice)
+                if (selectedUids.has(card.uid)) {
+                    cardEl.style.opacity = '1';
+                    cardEl.style.transform = 'scale(0.85)';
+                    cardEl.style.boxShadow = '0 0 15px var(--accent-primary)';
+                }
 
                 wrapper.onclick = () => {
                     if (selectedUids.has(card.uid)) {
+                        // Deselect
                         selectedUids.delete(card.uid);
                         indicator.style.opacity = '0';
-                        cardEl.style.opacity = '0.7';
+                        indicator.style.transform = 'scale(0)';
+                        cardEl.style.opacity = '0.6';
+                        cardEl.style.transform = 'scale(0.8)';
+                        cardEl.style.boxShadow = 'none';
                     } else {
+                        // Select
                         if (selectedUids.size >= 5) {
-                            this.showMessage("Max 5 Bench Pokémon!");
+                            this.showToast("Max 5 Bench Pokémon!");
                             return;
                         }
                         selectedUids.add(card.uid);
                         indicator.style.opacity = '1';
+                        indicator.style.transform = 'scale(1)';
                         cardEl.style.opacity = '1';
+                        cardEl.style.transform = 'scale(0.85)'; // Slight pop
+                        cardEl.style.boxShadow = '0 0 15px var(--accent-primary)';
                     }
                 };
 

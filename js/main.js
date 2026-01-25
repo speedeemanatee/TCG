@@ -248,6 +248,7 @@ async function playerSetup() {
         benchUids.forEach(uid => {
             gameEngine.playBasicToBench('player', uid);
         });
+        gameUI.render(); // Ensure bench is updated visibly immediately
     }
 
     gameUI.render();

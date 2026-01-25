@@ -1780,11 +1780,14 @@ h3 {
     /* Mobile Core Adjustments */
     /* Mobile Core Adjustments */
     /* Mobile Core Adjustments */
+    /* Mobile Core Adjustments */
     .screen {
-        padding-bottom: 400px;
-        /* Increased space for action panel + fixed start buttons */
-        overflow-y: auto;
+        padding-bottom: 300px !important;
+        /* Massive space to force scroll capability so player side isn't hidden */
+        overflow-y: auto !important;
         /* Allow body scroll if needed */
+        height: auto !important;
+        min-height: 100vh;
     }
 
     /* Fixed Start Screen Buttons */
@@ -1847,6 +1850,29 @@ h3 {
         /* Above everything */
         border-radius: 12px;
         padding: 1rem;
+    }
+
+    /* Clarify Empty Slots on Mobile */
+    .active-zone:empty::before {
+        content: 'Active Pokémon';
+        display: block;
+        color: rgba(255, 255, 255, 0.2);
+        font-size: 0.8rem;
+        text-align: center;
+        width: 100%;
+        margin-top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .bench-zone:empty::before {
+        content: 'Bench';
+        display: block;
+        color: rgba(255, 255, 255, 0.2);
+        font-size: 0.7rem;
+        text-align: center;
+        width: 100%;
+        margin-top: 50%;
+        transform: translateY(-50%);
     }
 
     .card-detail-panel.active {
