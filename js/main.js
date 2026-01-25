@@ -4,7 +4,9 @@
 let gameState = null;
 let gameEngine = null;
 let cpuAI = null;
+
 let gameUI = null;
+let bgEffect = null;
 let selectedDeck = 'fire'; // Default selection
 
 // Apply theme immediately to prevent flash
@@ -39,6 +41,12 @@ function initGame() {
     // Setup Settings (Title Screen)
     setupSettings();
     setupChangelog();
+
+    // Background Effect (Title Screen only)
+    if (window.BackgroundEffect) {
+        bgEffect = new BackgroundEffect();
+        bgEffect.start();
+    }
 
     console.log('✅ Game objects created');
 }
@@ -165,6 +173,11 @@ async function startNewGame() {
     // Clear any existing game state
     if (gameUI) {
         gameUI.hideModal();
+    }
+
+    // Stop background effect
+    if (bgEffect) {
+        bgEffect.stop();
     }
 
     // Setup the game

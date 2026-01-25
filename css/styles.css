@@ -122,6 +122,8 @@ h3 {
 .start-content {
     text-align: center;
     padding: 2rem;
+    position: relative;
+    z-index: 10;
 }
 
 .game-title {
@@ -1785,9 +1787,11 @@ h3 {
         padding-bottom: 300px !important;
         /* Massive space to force scroll capability so player side isn't hidden */
         overflow-y: auto !important;
-        /* Allow body scroll if needed */
-        height: auto !important;
-        min-height: 100vh;
+        /* Allow internal scroll */
+        height: 100% !important;
+        /* Constrain to viewport height so overflow triggers scrollbar */
+        min-height: 0;
+        /* Override min-height if present */
     }
 
     /* Fixed Start Screen Buttons */
