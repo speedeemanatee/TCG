@@ -10,6 +10,7 @@ class BackgroundEffect {
         this.particleCount = 35; // Reduced from 60
         this.connectionDistance = 150;
         this.mouseRadius = 300; // Increased radius for interaction
+        this.ballsCollected = 0; // Track gathered balls
 
         this.init();
     }
@@ -126,6 +127,9 @@ class BackgroundEffect {
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+        // Filter out collected particles
+        this.particles = this.particles.filter(p => !p.collected);
+
         this.particles.forEach(p => {
             // Move
             p.x += p.vx;
@@ -141,6 +145,25 @@ class BackgroundEffect {
             const dy = this.mouse.y - p.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
+            // Collection Check (Mouse hits ball)
+            if (distance < p.size + 20) { // Tolerance
+                p.collected = true;
+                this.ballsCollected++;
+
+                // Visual pop? just disappear for now
+
+                // Check win condition
+                if (this.ballsCollected >= 10) {
+                    if (window.unlockTroutDeck) {
+                        // Check unlocked status via DOM check to correspond with main.js logic
+                        if (!document.querySelector('.deck-choice[data-deck="trout"]')) {
+                            window.unlockTroutDeck();
+                            this.ballsCollected = 0; // Reset
+                        }
+                    }
+                }
+            }
+
             if (distance < this.mouseRadius) {
                 // Stronger pull towards mouse
                 const force = (this.mouseRadius - distance) / this.mouseRadius;
@@ -155,6 +178,24 @@ class BackgroundEffect {
 
             this.drawPokeball(p);
         });
+
+        // Respawn if too few? (Optional, but let's keep it simple: consume them)
+        // If we run out, maybe spawn more? 
+        if (this.particles.length < 10) { // Keep some on screen
+            // Spawn one new one occasionally?
+            if (Math.random() < 0.05) {
+                this.particles.push({
+                    x: Math.random() * this.canvas.width,
+                    y: Math.random() * this.canvas.height,
+                    vx: (Math.random() - 0.5) * 1.5,
+                    vy: (Math.random() - 0.5) * 1.5,
+                    size: Math.random() * 6 + 4,
+                    angle: Math.random() * Math.PI * 2,
+                    spin: (Math.random() - 0.5) * 0.1,
+                    collected: false
+                });
+            }
+        }
 
         requestAnimationFrame(() => this.animate());
     }

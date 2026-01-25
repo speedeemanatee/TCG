@@ -39,7 +39,8 @@ class GameEngine {
             'psychic': createPsychicDeck,
             'fighting': createFightingDeck,
             'colorless': createColorlessDeck,
-            'dark': createDarkDeck
+            'dark': createDarkDeck,
+            'trout': createTroutDeck // Easter Egg
         };
 
         const playerDeckCreator = deckCreators[playerDeckType] || createFireDeck;

@@ -1,5 +1,156 @@
 /* Pokemon TCG - Game Styles */
 
+/* Wide modal for gallery */
+/* Wide modal for gallery - Override base modal constraints */
+.modal.wide {
+    max-width: 98vw !important;
+    /* Force override of any base max-width */
+    width: 98vw !important;
+    height: 95vh;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes sparkleIn {
+    0% {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+        filter: brightness(3);
+    }
+
+    50% {
+        transform: scale(1.2) rotate(10deg);
+        opacity: 1;
+        filter: brightness(2);
+        box-shadow: 0 0 50px white;
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+        filter: brightness(1);
+    }
+}
+
+.sparkle-in {
+    animation: sparkleIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.modal.wide #modal-content {
+    flex: 1;
+    overflow: hidden;
+    /* Let grid handle scroll */
+}
+
+/* Main container for single card view */
+/* Main container for single card view */
+.card-gallery-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    /* Allow growth */
+    position: relative;
+    padding: 1rem 1rem 4rem 1rem;
+    /* Extra bottom padding for scroll */
+    overflow-y: auto;
+    /* Allow scrolling if card is taller than screen */
+}
+
+/* Single Card styling in gallery */
+/* Single Card styling in gallery */
+.card-gallery-container .pokemon-card {
+    /* Force variable overrides */
+    --card-width: 900px !important;
+    --card-height: auto !important;
+    /* Allow height to grow */
+
+    /* Force direct property overrides as backup */
+    width: 900px !important;
+    min-height: 1260px !important;
+    /* Minimum massive height */
+    height: auto !important;
+    /* Allow content to push height */
+
+    flex-shrink: 0;
+    font-size: 2.7em;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8);
+    animation: fadeIn 0.3s ease-out;
+    margin-bottom: 3rem;
+    /* Space for controls below */
+}
+
+.gallery-controls {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 1rem;
+    position: relative;
+    /* No longer absolute */
+    bottom: auto;
+    z-index: 100;
+    padding-bottom: 2rem;
+}
+
+.gallery-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+.gallery-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.gallery-btn:active {
+    transform: scale(0.95);
+}
+
+.gallery-counter {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    min-width: 80px;
+    text-align: center;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Ensure text flows better in larger cards */
+.card-gallery-container .pokemon-card .attack-effect {
+    font-size: 27px;
+    line-height: 1.6;
+    white-space: normal;
+    margin-top: 15px;
+}
+
+.card-gallery-container .pokemon-card .card-artwork {
+    height: 570px;
+}
+
+
 /* ============================================
    DESIGN TOKENS
    ============================================ */
@@ -114,9 +265,14 @@ h3 {
 
 /* Start Screen */
 #start-screen {
-    justify-content: center;
+    justify-content: flex-start;
+    /* Allow scrolling from top */
     align-items: center;
     background: linear-gradient(135deg, #0a0a1a 0%, #1a1040 50%, #0a0a1a 100%);
+    overflow-y: auto;
+    /* Enable scroll if content is tall */
+    padding: 4rem 0;
+    /* Add vertical spacing */
 }
 
 .start-content {
@@ -164,6 +320,18 @@ h3 {
     max-width: 1000px;
     margin-left: auto;
     margin-right: auto;
+}
+
+.deck-preview {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 1rem;
 }
 
 .deck-choice {
@@ -234,6 +402,12 @@ h3 {
     box-shadow: 0 0 30px rgba(156, 163, 175, 0.4);
 }
 
+.deck-choice.selectable.selected[data-deck="trout"] {
+    border-color: #3b82f6;
+    /* Blueish */
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+}
+
 .deck-icon {
     width: 60px;
     height: 60px;
@@ -300,13 +474,26 @@ h3 {
     overflow: hidden;
 }
 
+.start-ac.title-container {
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 20;
+    /* Ensure this is above the background canvas */
+    cursor: pointer;
+    /* Hint that it's interactive */
+}
+
 .start-actions {
     margin-top: 2rem;
-    position: relative;
-    z-index: 10;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 1rem;
+    position: relative;
+    z-index: 20;
+    /* Ensure buttons are clickable */
+    padding-bottom: 2rem;
+    /* Ensure space at bottom */
 }
 
 .start-btn:hover {
@@ -931,7 +1118,7 @@ h3 {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center;
+    object-position: top center;
 }
 
 /* Type-specific artwork backgrounds */
@@ -2827,4 +3014,43 @@ input:checked+.slider:before {
         padding-bottom: 250px !important;
         /* Force extra space at bottom of board content */
     }
+}
+
+/* Gallery-specific scaled internal spacing */
+.card-gallery-container .pokemon-card .card-header {
+    padding: 30px 40px 20px;
+}
+
+.card-gallery-container .pokemon-card .card-attacks {
+    padding: 20px 40px;
+}
+
+.card-gallery-container .pokemon-card .attack {
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.card-gallery-container .pokemon-card .card-footer {
+    padding: 20px 40px 30px;
+    margin: 0 40px;
+    font-size: 0.6em;
+}
+
+.card-gallery-container .pokemon-card .footer-label {
+    font-size: 0.8em;
+}
+
+.card-gallery-container .pokemon-card .footer-modifier {
+    font-size: 1.2em;
+}
+
+/* Hide the duplicate energy/type icon in gallery view */
+.card-gallery-container .pokemon-card .card-type-icon,
+.card-gallery-container .pokemon-card .type-icon,
+.card-gallery-container .pokemon-card .energy-type-icon {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
 }

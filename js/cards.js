@@ -2191,4 +2191,266 @@ function createDarkDeck() {
     return deck;
 }
 
-window.createDarkDeck = createDarkDeck;
+
+// ============================================
+// TROUT DECK (EASTER EGG)
+// ============================================
+
+const Andregor = {
+    id: 'andregor',
+    name: 'Andregor',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.GRASS,
+    stage: Stage.BASIC,
+    hp: 100,
+    evolvesFrom: null,
+    image: 'assets/trout/andregor.png',
+    placeholderIcon: '🐏',
+    weakness: PokemonType.FIRE,
+    resistance: null,
+    retreatCost: 2,
+    attacks: [
+        {
+            name: 'Mow Down',
+            cost: [PokemonType.GRASS, PokemonType.COLORLESS],
+            damage: 30,
+            effect: 'discardEnergy',
+            effectAmount: 1,
+            effectType: PokemonType.GRASS,
+            description: 'Discard 1 Grass Energy from this Pokemon.'
+        },
+        {
+            name: 'Ram Charge',
+            cost: [PokemonType.GRASS, PokemonType.GRASS, PokemonType.COLORLESS],
+            damage: 80,
+            effect: 'selfDamage',
+            selfDamage: 20,
+            description: 'This Pokemon does 20 damage to itself.'
+        }
+    ]
+};
+
+const Debbray = {
+    id: 'debbray',
+    name: 'Debbray',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.ELECTRIC,
+    stage: Stage.BASIC,
+    hp: 90,
+    evolvesFrom: null,
+    image: 'assets/trout/debbray.png',
+    placeholderIcon: '🦷',
+    weakness: PokemonType.FIGHTING,
+    resistance: null,
+    retreatCost: 1,
+    attacks: [
+        {
+            name: 'Orange Burn',
+            cost: [PokemonType.ELECTRIC],
+            damage: 20,
+            effect: 'coinFlipParalyze',
+            description: 'Flip a coin. If heads, the Defending Pokemon is now Paralyzed.'
+        },
+        {
+            name: 'Precision Drill',
+            cost: [PokemonType.ELECTRIC, PokemonType.COLORLESS, PokemonType.COLORLESS],
+            damage: 60,
+            effect: 'swift',
+            description: 'This attack\'s damage isn\'t affected by Resistance.'
+        }
+    ]
+};
+
+const Andreon = {
+    id: 'andreon',
+    name: 'Andreon',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.COLORLESS,
+    stage: Stage.BASIC,
+    hp: 80,
+    evolvesFrom: null,
+    image: 'assets/trout/andreon.png',
+    placeholderIcon: '📖',
+    weakness: PokemonType.FIGHTING,
+    resistance: null,
+    retreatCost: 1,
+    attacks: [
+        {
+            name: 'Power Walk',
+            cost: [PokemonType.COLORLESS],
+            damage: 20,
+            effect: 'searchEnergy',
+            description: 'Search your deck for a Basic Energy card and attach it to this Pokemon.'
+        },
+        {
+            name: 'Credit Check',
+            cost: [PokemonType.COLORLESS, PokemonType.COLORLESS],
+            damage: 40,
+            effect: 'viewHand',
+            description: 'Look at your opponent\'s hand.'
+        }
+    ]
+};
+
+const Jenloo = {
+    id: 'jenloo',
+    name: 'Auntjen',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.WATER,
+    stage: Stage.BASIC,
+    hp: 90,
+    evolvesFrom: null,
+    image: 'assets/trout/jenloo.png',
+    placeholderIcon: '❄️',
+    weakness: PokemonType.ELECTRIC,
+    resistance: null,
+    retreatCost: 2,
+    attacks: [
+        {
+            name: 'Snow Shoe Stomp',
+            cost: [PokemonType.WATER, PokemonType.COLORLESS],
+            damage: 30,
+            effect: 'coinFlipAsleep',
+            description: 'Flip a coin. If heads, the Defending Pokemon is now Asleep.'
+        },
+        {
+            name: 'Feng Shui',
+            cost: [PokemonType.WATER, PokemonType.WATER],
+            damage: 50,
+            effect: 'gustOfWind',
+            description: 'Switch the Defending Pokemon with 1 of your opponent\'s Benched Pokemon.'
+        }
+    ]
+};
+
+const Justoak = {
+    id: 'justoak',
+    name: 'Justoak',
+    cardType: CardType.POKEMON,
+    pokemonType: PokemonType.FIGHTING,
+    stage: Stage.BASIC,
+    hp: 110,
+    evolvesFrom: null,
+    image: 'assets/trout/justoak.png',
+    placeholderIcon: '🏠',
+    weakness: PokemonType.GRASS,
+    resistance: null,
+    retreatCost: 3,
+    attacks: [
+        {
+            name: 'Treehouse Construct',
+            cost: [PokemonType.FIGHTING],
+            damage: 0,
+            effect: 'heal',
+            healAmount: 30,
+            description: 'Heal 30 damage from this Pokemon.'
+        },
+        {
+            name: 'Dad Strength',
+            cost: [PokemonType.FIGHTING, PokemonType.FIGHTING, PokemonType.COLORLESS],
+            damage: 70,
+            effect: 'coinFlipBonus',
+            bonusDamage: 20,
+            description: 'Flip a coin. If heads, this attack does 20 more damage.'
+        }
+    ]
+};
+
+// -- Custom Trainers --
+
+const SugarShack = {
+    id: 'sugar_shack',
+    name: 'Sugar Shack',
+    cardType: CardType.TRAINER,
+    trainerType: TrainerType.ITEM, // Simplified as Item for now unless we implement Stadium logic
+    image: 'assets/trout/sugar_shack.png',
+    effect: 'sugarShack',
+    description: 'Flip a coin. If heads, heal 20 damage from your Active Pokemon. If tails, your Active Pokemon is Confused.'
+};
+
+const BridgeOverCreek = {
+    id: 'bridge_over_creek',
+    name: 'Bridge Over Creek',
+    cardType: CardType.TRAINER,
+    trainerType: TrainerType.ITEM,
+    image: 'assets/trout/bridge_creek.png',
+    effect: 'switch',
+    description: 'Switch your Active Pokemon with 1 of your Benched Pokemon.'
+};
+
+const SqueakyZipline = {
+    id: 'squeaky_zipline',
+    name: 'Squeaky Zipline',
+    cardType: CardType.TRAINER,
+    trainerType: TrainerType.ITEM,
+    image: 'assets/trout/squeaky_zipline.png',
+    effect: 'gustOfWind',
+    description: 'Switch your opponent\'s Active Pokemon with 1 of their Benched Pokemon.'
+};
+
+const Sunrise = {
+    id: 'sunrise',
+    name: 'Sunrise',
+    cardType: CardType.TRAINER,
+    trainerType: TrainerType.SUPPORTER,
+    image: 'assets/trout/sunrise.png',
+    effect: 'energyRetrieval2',
+    description: 'Put up to 2 Basic Energy cards from your discard pile into your hand.'
+};
+
+const IcyHill = {
+    id: 'icy_hill',
+    name: 'Icy Hill',
+    cardType: CardType.TRAINER,
+    trainerType: TrainerType.ITEM,
+    image: 'assets/trout/icy_hill.png',
+    effect: 'blockRetreat',
+    description: 'The Defending Pokemon can\'t retreat during your opponent\'s next turn.'
+};
+
+const FloodedBridge = {
+    id: 'flooded_bridge',
+    name: 'Flooded Bridge',
+    cardType: CardType.TRAINER,
+    trainerType: TrainerType.ITEM,
+    image: 'assets/trout/flooded_bridge.png',
+    effect: 'discardOpponentEnergy',
+    description: 'Discard an Energy attached to the Defending Pokemon.'
+};
+
+// -- Custom Energies --
+
+const TroutGrass = { ...GrassEnergy, name: 'Landscaper Energy', image: 'assets/trout/energy_grass.png', id: 'trout_grass_energy' };
+const TroutElectric = { ...ElectricEnergy, name: 'Dental Energy', image: 'assets/trout/energy_electric.png', id: 'trout_electric_energy' };
+const TroutWater = { ...WaterEnergy, name: 'Ice Energy', image: 'assets/trout/energy_water.png', id: 'trout_water_energy' };
+const TroutFighting = { ...FightingEnergy, name: 'Builder Energy', image: 'assets/trout/energy_fighting.png', id: 'trout_fighting_energy' };
+
+
+function createTroutDeck() {
+    const deck = [];
+
+    // Pokemon (20) - 4 copies of each
+    for (let i = 0; i < 4; i++) deck.push({ ...Andregor, uid: `andregor-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...Debbray, uid: `debbray-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...Andreon, uid: `andreon-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...Jenloo, uid: `jenloo-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...Justoak, uid: `justoak-${i}` });
+
+    // Trainers (22)
+    for (let i = 0; i < 2; i++) deck.push({ ...SugarShack, uid: `sugar-shack-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...BridgeOverCreek, uid: `bridge-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...SqueakyZipline, uid: `zipline-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...Sunrise, uid: `sunrise-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...IcyHill, uid: `icy-hill-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...FloodedBridge, uid: `flooded-bridge-${i}` });
+
+    // Energy (18)
+    for (let i = 0; i < 5; i++) deck.push({ ...TroutGrass, uid: `trout-grass-${i}` });
+    for (let i = 0; i < 5; i++) deck.push({ ...TroutElectric, uid: `trout-electric-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...TroutWater, uid: `trout-water-${i}` });
+    for (let i = 0; i < 4; i++) deck.push({ ...TroutFighting, uid: `trout-fighting-${i}` });
+
+    return deck;
+}
+
+window.createTroutDeck = createTroutDeck;

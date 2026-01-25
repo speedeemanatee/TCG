@@ -41,6 +41,7 @@ function initGame() {
     // Setup Settings (Title Screen)
     setupSettings();
     setupChangelog();
+    setupEasterEgg();
 
     // Background Effect (Title Screen only)
     if (window.BackgroundEffect) {
@@ -287,23 +288,246 @@ document.addEventListener('DOMContentLoaded', () => {
         startBtn.addEventListener('click', startNewGame);
     }
 
-    // Add deck selection listeners
-    const deckChoices = document.querySelectorAll('.deck-choice.selectable');
-    deckChoices.forEach(choice => {
-        choice.addEventListener('click', () => {
+    // Use Event Delegation for Deck Selection (Handles dynamic decks like Trout)
+    const viewDeckBtn = document.getElementById('view-deck-btn');
+    const deckContainer = document.querySelector('.deck-preview');
+    if (deckContainer) {
+        deckContainer.addEventListener('click', (e) => {
+            const choice = e.target.closest('.deck-choice.selectable');
+            if (!choice) return;
+
             // Update state
             selectedDeck = choice.dataset.deck;
 
+            // Show view button
+            if (viewDeckBtn) {
+                viewDeckBtn.style.display = 'flex';
+            }
+
             // Update UI
-            deckChoices.forEach(c => c.classList.remove('selected'));
+            const allChoices = document.querySelectorAll('.deck-choice.selectable');
+            allChoices.forEach(c => c.classList.remove('selected'));
             choice.classList.add('selected');
 
             console.log(`🎴 Selected deck: ${selectedDeck}`);
         });
-    });
+    }
+
+    // View Deck Button listener
+    if (viewDeckBtn) {
+        viewDeckBtn.addEventListener('click', () => {
+            // Dynamic import/creation based on deck type
+            let deck = [];
+            switch (selectedDeck) {
+                case 'fire': deck = createFireDeck(); break;
+                case 'water': deck = createWaterDeck(); break;
+                case 'grass': deck = createGrassDeck(); break;
+                case 'electric': deck = createElectricDeck(); break;
+                case 'psychic': deck = createPsychicDeck(); break;
+                case 'fighting': deck = createFightingDeck(); break;
+                case 'dark': deck = createDarkDeck(); break;
+                case 'colorless': deck = createColorlessDeck(); break;
+                case 'trout': deck = createTroutDeck(); break;
+            }
+
+            // Filter unique cards
+            const uniqueCards = [];
+            const seenIds = new Set();
+            deck.forEach(card => {
+                // Use base ID (remove unique suffix if present)
+                const baseId = card.id;
+                if (!seenIds.has(baseId)) {
+                    seenIds.add(baseId);
+                    uniqueCards.push(card);
+                }
+            });
+
+            showDeckPreview(uniqueCards, selectedDeck);
+        });
+    }
 
     // Auto-start if no start button
     if (!startBtn) {
         startNewGame();
     }
 });
+
+function showDeckPreview(cards, deckType) {
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalContent = document.getElementById('modal-content');
+
+    modalTitle.textContent = `${deckType.charAt(0).toUpperCase() + deckType.slice(1)} Deck Preview`;
+    modal.classList.add('wide');
+
+    let currentIndex = 0;
+
+    // Render Function
+    const renderCard = () => {
+        const container = modalContent.querySelector('.card-gallery-container');
+        if (!container) return;
+
+        let cardWrapper = container.querySelector('.card-wrapper');
+        if (!cardWrapper) {
+            cardWrapper = document.createElement('div');
+            cardWrapper.className = 'card-wrapper';
+            // Insert before controls
+            const controls = container.querySelector('.gallery-controls');
+            if (controls) {
+                container.insertBefore(cardWrapper, controls);
+            } else {
+                container.appendChild(cardWrapper);
+            }
+        }
+        cardWrapper.innerHTML = '';
+
+        const card = cards[currentIndex];
+        const cardEl = window.gameUI.createCardElement(card);
+        cardEl.classList.remove('playable', 'selectable');
+        cardEl.style.cursor = 'default';
+
+        cardWrapper.appendChild(cardEl);
+
+        // Update Counter
+        const counter = container.querySelector('.gallery-counter');
+        if (counter) counter.textContent = `${currentIndex + 1} / ${cards.length}`;
+    };
+
+    // Setup HTML
+    modalContent.innerHTML = `
+        <div class="card-gallery-container">
+            <div class="gallery-controls">
+                <button class="gallery-btn prev-btn">❮</button>
+                <div class="gallery-counter">1 / ${cards.length}</div>
+                <button class="gallery-btn next-btn">❯</button>
+            </div>
+        </div>
+    `;
+
+    // Listeners
+    const prevBtn = modalContent.querySelector('.prev-btn');
+    const nextBtn = modalContent.querySelector('.next-btn');
+
+    const nextCard = () => {
+        currentIndex = (currentIndex + 1) % cards.length;
+        renderCard();
+    };
+
+    const prevCard = () => {
+        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+        renderCard();
+    };
+
+    nextBtn.addEventListener('click', nextCard);
+    prevBtn.addEventListener('click', prevCard);
+
+    // Keyboard
+    const keyHandler = (e) => {
+        if (!modal.classList.contains('active')) return;
+        if (e.key === 'ArrowRight') nextCard();
+        if (e.key === 'ArrowLeft') prevCard();
+    };
+    document.addEventListener('keydown', keyHandler);
+
+    // Initial
+    renderCard();
+
+    modal.classList.add('active');
+
+    // Cleanup
+    const cleanup = () => {
+        modal.classList.remove('wide');
+        document.removeEventListener('keydown', keyHandler);
+        modal.querySelector('.modal-close').removeEventListener('click', cleanup);
+    };
+    modal.querySelector('.modal-close').addEventListener('click', cleanup);
+}
+
+
+// Easter Egg Logic
+function setupEasterEgg() {
+    const title = document.querySelector('.title-poke');
+    if (!title) return;
+
+    let clickCount = 0;
+    let lastClickTime = 0;
+    const REQUIRED_CLICKS = 5;
+    const TIME_WINDOW = 1000; // 1 second reset for rapid clicks
+
+    // Disable default selection to prevent highlighting text
+    title.style.userSelect = 'none';
+    title.style.cursor = 'pointer';
+    title.style.pointerEvents = 'auto'; // Force clickable
+
+    // Check if already unlocked - DISABLING PERSISTENCE AS REQUESTED
+    /* 
+    if (localStorage.getItem('pokemon-tcg-trout-unlocked') === 'true') {
+        unlockTroutDeckUI();
+    }
+    */
+
+    // Use mousedown to prevent text selection interference
+    title.addEventListener('mousedown', (e) => {
+        const now = Date.now();
+        console.log('Title clicked!'); // Debug
+
+        if (now - lastClickTime > TIME_WINDOW) {
+            clickCount = 0;
+        }
+
+        clickCount++;
+        lastClickTime = now;
+
+        // Visual feedback
+        title.style.transform = `scale(${1 + (clickCount * 0.1)})`;
+        setTimeout(() => title.style.transform = '', 100);
+
+        if (clickCount >= REQUIRED_CLICKS) {
+            // Check if already unlocked in this session
+            if (!document.querySelector('.deck-choice[data-deck="trout"]')) {
+                unlockTroutDeck();
+            }
+            clickCount = 0;
+        }
+    });
+}
+
+function unlockTroutDeck() {
+    // localStorage.setItem('pokemon-tcg-trout-unlocked', 'true'); // Removed persistence
+    alert('🐟 A wild Trout appeared! The Trout Deck is now available!');
+    unlockTroutDeckUI();
+
+    // Auto-select
+    const troutDeckBtn = document.querySelector('.deck-choice[data-deck="trout"]');
+    if (troutDeckBtn) troutDeckBtn.click();
+}
+window.unlockTroutDeck = unlockTroutDeck;
+
+function unlockTroutDeckUI() {
+    const deckContainer = document.querySelector('.deck-preview');
+    if (!deckContainer) return;
+
+    // Check if already exists
+    if (document.querySelector('.deck-choice[data-deck="trout"]')) return;
+
+    const troutDeckHTML = `
+        <div class="deck-choice selectable sparkle-in" data-deck="trout">
+            <div class="deck-art-container">
+                <img src="assets/trout/andregor.png" alt="Trout Deck" class="deck-art-img" style="object-position: top;">
+                <div class="deck-art-placeholder" style="background: linear-gradient(135deg, #166534 0%, #3b82f6 100%);">
+                    <span>🐟</span>
+                    <small>Easter Egg</small>
+                </div>
+            </div>
+            <div class="deck-info">
+                <h3>Trout Deck</h3>
+                <p>Values, Integrity, Excellence</p>
+            </div>
+        </div>
+    `;
+
+    // Prepend to start of list (make it first)
+    deckContainer.insertAdjacentHTML('afterbegin', troutDeckHTML);
+
+    // No need to add specific listener anymore due to event delegation
+}
