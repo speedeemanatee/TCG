@@ -1762,12 +1762,26 @@ h3 {
     }
 }
 
+@media (max-height: 800px) {
+    #start-screen {
+        align-items: flex-start;
+        padding-top: 4rem;
+        overflow-y: auto;
+    }
+}
+
 @media (max-width: 600px) {
+    #start-screen {
+        padding-top: 2rem;
+        justify-content: flex-start;
+        /* Don't center vertically on small screens */
+    }
 
     /* Mobile Core Adjustments */
     /* Mobile Core Adjustments */
+    /* Mobile Core Adjustments */
     .screen {
-        padding-bottom: 250px;
+        padding-bottom: 400px;
         /* Increased space for action panel + fixed start buttons */
         overflow-y: auto;
         /* Allow body scroll if needed */
