@@ -555,7 +555,6 @@ class GameUI {
                         <span class="card-hp">${card.hp} HP</span>
                     </div>
                     <div class="card-stage">${card.stage}</div>
-                    <div class="card-type-icon ${card.pokemonType}"></div>
                     <div class="card-artwork">
                         ${artworkContent}
                     </div>
