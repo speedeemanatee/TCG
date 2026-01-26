@@ -3014,6 +3014,59 @@ input:checked+.slider:before {
         padding-bottom: 250px !important;
         /* Force extra space at bottom of board content */
     }
+
+    /* Fix Title Screen on Mobile Portrait */
+    #start-screen {
+        padding: 0;
+        /* Remove padding completely */
+        padding-top: 1rem;
+        justify-content: flex-start;
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    .start-content {
+        padding: 1rem;
+        width: 100%;
+        margin-top: 0;
+    }
+
+    .game-title {
+        font-size: 3rem !important;
+        line-height: 1.1;
+        margin-top: 0.5rem;
+    }
+
+    /* Ensure logo is visible on mobile */
+    .title-poke {
+        background: none !important;
+        -webkit-text-fill-color: #ffcb05 !important;
+        color: #ffcb05 !important;
+        /* Reduce stroke on mobile or it swallows the text */
+        -webkit-text-stroke: 1px #2a4480 !important;
+        text-shadow: 2px 2px 0 #1a2c55 !important;
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        height: auto !important;
+        min-height: 1.2em;
+    }
+
+    .title-sub {
+        font-size: 0.9rem;
+        letter-spacing: 3px;
+    }
+
+    .deck-preview {
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .deck-choice {
+        min-width: 140px;
+        flex: 1 1 45%;
+        /* 2 columns */
+    }
 }
 
 /* Gallery-specific scaled internal spacing */
